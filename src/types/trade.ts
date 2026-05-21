@@ -15,10 +15,6 @@ export interface Trade {
   fee: number
   net: number
   win_loss: WinLoss
-  day_of_week: string
-  week_of_year: number
-  month: number
-  year: number
   reason_entry: string | null
   emotion_score: number | null
   rule_followed: boolean | null
@@ -29,7 +25,7 @@ export interface Trade {
 
 export type TradeInsert = Omit<
   Trade,
-  'id' | 'user_id' | 'points' | 'net' | 'win_loss' | 'day_of_week' | 'week_of_year' | 'month' | 'year' | 'created_at' | 'updated_at'
+  'id' | 'user_id' | 'points' | 'net' | 'win_loss' | 'created_at' | 'updated_at'
 >
 
 export interface UserSettings {
