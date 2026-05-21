@@ -90,21 +90,25 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
         Tambah Trade
       </DialogTrigger>
 
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-xl p-0 gap-0 overflow-hidden">
+      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-xl p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header strip warna sesuai hasil */}
         <div className={cn(
-          'h-1 w-full transition-colors',
+          'h-1 w-full shrink-0 transition-colors',
           hasResult
             ? isWin ? 'bg-emerald-500' : isLoss ? 'bg-red-500' : 'bg-zinc-600'
             : 'bg-zinc-700'
         )} />
 
-        <div className="p-6">
-          <DialogHeader className="mb-5">
-            <DialogTitle className="text-zinc-100 text-base font-semibold">Tambah Trade Baru</DialogTitle>
+        {/* Header tetap di atas */}
+        <div className="px-6 pt-5 pb-3 shrink-0 border-b border-zinc-800">
+          <DialogHeader>
+            <DialogTitle className="text-zinc-100 text-sm font-semibold">Tambah Trade Baru</DialogTitle>
           </DialogHeader>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Konten scrollable */}
+        <div className="overflow-y-auto flex-1 px-6 py-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* === SECTION 1: Info Dasar === */}
             <div className="grid grid-cols-3 gap-3">
@@ -309,23 +313,24 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
                 {error}
               </p>
             )}
-
-            <div className="flex justify-end gap-2 pt-1">
-              <Button type="button" variant="ghost" onClick={() => handleClose(false)}
-                className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 h-9">
-                Batal
-              </Button>
-              <Button type="submit" disabled={loading}
-                className={cn('h-9 font-semibold gap-2',
-                  hasResult && isWin ? 'bg-emerald-600 hover:bg-emerald-500' :
-                  hasResult && isLoss ? 'bg-red-700 hover:bg-red-600' :
-                  'bg-zinc-700 hover:bg-zinc-600'
-                )}>
-                {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                {loading ? 'Menyimpan...' : 'Simpan Trade'}
-              </Button>
-            </div>
           </form>
+        </div>
+
+        {/* Footer sticky */}
+        <div className="px-6 py-4 border-t border-zinc-800 shrink-0 flex justify-end gap-2 bg-zinc-900">
+          <Button type="button" variant="ghost" onClick={() => handleClose(false)}
+            className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 h-9 text-sm">
+            Batal
+          </Button>
+          <Button onClick={handleSubmit} disabled={loading}
+            className={cn('h-9 font-semibold gap-2 text-sm',
+              hasResult && isWin ? 'bg-emerald-600 hover:bg-emerald-500' :
+              hasResult && isLoss ? 'bg-red-700 hover:bg-red-600' :
+              'bg-zinc-700 hover:bg-zinc-600'
+            )}>
+            {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {loading ? 'Menyimpan...' : 'Simpan Trade'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
