@@ -4,6 +4,7 @@
 - [x] Fase 1: Setup project (Next.js, Tailwind, shadcn/ui, Supabase, Auth, Middleware)
 - [x] Fase 2: Trade Log (form input, tabel lengkap, filter, sort, delete, Symbol CRUD)
 - [x] Fase A: Multi-Account (tiap user bisa banyak akun trading, switcher di header, /accounts CRUD, empty-state inline per page)
+- [x] Fase B: Mobile Responsive (bottom nav <lg, sidebar lg+, TradeTable card view, modal full-screen, filter bar adaptif, KPI 2-col mobile, calendar grid compact, safe-area inset)
 
 ---
 
@@ -42,12 +43,15 @@
 - [ ] Heatmap performa per jam entry
 - [ ] Export data trades ke CSV
 
-## Fase B — Mobile Responsive Pass (NEXT)
-- [ ] TradeTable → card view di breakpoint <md (table sulit di-scroll di HP)
-- [ ] Bottom navigation untuk mobile (Sidebar disembunyikan, ganti bottom-nav)
-- [ ] Modal AddTrade → full-screen sheet di mobile (saat ini kepotong)
-- [ ] Header: account switcher tetap visible di mobile, sembunyikan title page
-- [ ] Audit touch targets (min 44px) & overflow di semua page
+## Fase B — Mobile Responsive Pass (DONE)
+- [x] TradeTable → card view di <md
+- [x] Bottom navigation <lg, sidebar lg+
+- [x] Modal AddTrade full-screen <sm
+- [x] Header adaptif + safe-area-inset-top
+- [x] Filter bar /trades responsif (search full-width, 3 select grid, summary bawah)
+- [x] Dashboard KPI 2-col di mobile, padding adaptif
+- [x] Calendar grid compact di mobile
+- [x] Accounts cards: tombol stack di mobile
 
 ## Fase 7 — Deploy & Polish
 - [ ] Deploy ke Vercel (connect GitHub repo → auto deploy)
