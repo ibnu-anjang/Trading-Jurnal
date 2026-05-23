@@ -40,10 +40,13 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const gross = parseFloat(form.value) || 0
+  const rawDiff = (parseFloat(form.close_price) || 0) - (parseFloat(form.entry_price) || 0)
+  const points = form.direction === 'Short' ? -rawDiff : rawDiff
+  const grossAbs = Math.abs(parseFloat(form.value) || 0)
+  // Tanda Gross P/L otomatis ngikut Points: kalau Points negatif, Gross jadi negatif.
+  const gross = points < 0 ? -grossAbs : grossAbs
   const fee = parseFloat(form.fee) || 0
   const net = gross - fee
-  const points = (parseFloat(form.close_price) || 0) - (parseFloat(form.entry_price) || 0)
   const hasResult = form.value !== ''
   const isWin = net > 0
   const isLoss = net < 0
@@ -70,7 +73,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
       entry_price: parseFloat(form.entry_price),
       close_price: parseFloat(form.close_price),
       size: parseFloat(form.size),
-      value: parseFloat(form.value),
+      value: gross,
       fee: parseFloat(form.fee) || 0,
       reason_entry: form.reason_entry || null,
       emotion_score: form.emotion_score ? parseInt(form.emotion_score) : null,
@@ -113,8 +116,8 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
           <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* === SECTION 1: Info Dasar === */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-3 sm:col-span-1 space-y-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="col-span-2 sm:col-span-1 space-y-1.5">
                 <Label className="text-xs text-zinc-500 uppercase tracking-wide">Tanggal & Waktu</Label>
                 <Input
                   type="datetime-local"
@@ -165,7 +168,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
             <Separator className="bg-zinc-800" />
 
             {/* === SECTION 2: Harga === */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs text-zinc-500 uppercase tracking-wide">Entry Price</Label>
                 <Input type="number" step="any" placeholder="0.00" value={form.entry_price}
@@ -178,7 +181,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
                   onChange={e => set('close_price', e.target.value)} required
                   className="bg-zinc-800 border-zinc-700 text-zinc-100 h-9 text-sm" />
               </div>
-              <div className="space-y-1.5">
+              <div className="col-span-2 sm:col-span-1 space-y-1.5">
                 <Label className="text-xs text-zinc-500 uppercase tracking-wide">Points</Label>
                 <div className={cn(
                   'h-9 flex items-center px-3 rounded-md border text-sm font-bold tabular-nums',
@@ -192,7 +195,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
             </div>
 
             {/* === SECTION 3: P/L === */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs text-zinc-500 uppercase tracking-wide">Size (lot)</Label>
                 <Input type="number" step="any" placeholder="1" value={form.size}
@@ -204,6 +207,9 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
                 <Input type="number" step="any" placeholder="0.00" value={form.value}
                   onChange={e => set('value', e.target.value)} required
                   className="bg-zinc-800 border-zinc-700 text-zinc-100 h-9 text-sm" />
+                {points < 0 && grossAbs > 0 && (
+                  <p className="text-[10px] text-zinc-500">Otomatis jadi −{grossAbs.toFixed(2)} (loss)</p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-zinc-500 uppercase tracking-wide">Fee ($)</Label>

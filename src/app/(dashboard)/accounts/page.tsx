@@ -32,7 +32,7 @@ export default function AccountsPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-4">
+    <div className="max-w-3xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Wallet className="h-4 w-4 text-emerald-400" />

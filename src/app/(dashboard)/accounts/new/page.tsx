@@ -14,7 +14,7 @@ const ACTIVE_ACCOUNT_COOKIE = 'active_account_id'
 
 export default function NewAccountPage() {
   const router = useRouter()
-  const { addAccount } = useAccounts()
+  const { addAccount, accounts } = useAccounts()
   const [name, setName] = useState('')
   const [broker, setBroker] = useState('')
   const [currency, setCurrency] = useState('USD')
@@ -35,9 +35,17 @@ export default function NewAccountPage() {
       initial_balance: bal,
     })
     if (err || !data) { setError(err ?? 'Gagal membuat akun'); setBusy(false); return }
-    // Set cookie agar akun baru langsung jadi active di navigasi berikutnya
-    document.cookie = `${ACTIVE_ACCOUNT_COOKIE}=${data.id}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
-    router.push('/')
+    // Auto-switch hanya kalau ini akun pertama. Kalau user udah punya akun aktif,
+    // tetap di akun lama supaya gak ganggu konteks kerja.
+    const isFirstAccount = accounts.length === 0
+    if (isFirstAccount) {
+      document.cookie = `${ACTIVE_ACCOUNT_COOKIE}=${data.id}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+      router.push('/')
+    } else {
+      router.push('/accounts')
+    }
+    // Refresh agar layout server component fetch ulang accounts → AccountSwitcher di header langsung tampilkan akun baru
+    router.refresh()
   }
 
   return (

@@ -48,7 +48,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
       {/* Symbol Management */}
       <Card className="bg-zinc-900 border-zinc-800">
         <CardHeader className="pb-3">

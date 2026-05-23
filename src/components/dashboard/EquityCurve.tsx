@@ -93,7 +93,11 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
             tick={{ fontSize: 10, fill: '#71717a' }}
             stroke="#3f3f46"
             tickLine={false}
-            tickFormatter={(v) => `${(v / 1000).toFixed(v >= 10000 ? 0 : 1)}k`}
+            tickFormatter={(v) => {
+              const abs = Math.abs(v)
+              if (abs >= 1000) return `${(v / 1000).toFixed(abs >= 10000 ? 0 : 1)}k`
+              return v.toFixed(0)
+            }}
             width={50}
           />
           <ReferenceLine
@@ -103,6 +107,7 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
             label={{ value: 'Start', fill: '#71717a', fontSize: 10, position: 'insideTopRight' }}
           />
           <Tooltip
+            cursor={{ stroke: '#a1a1aa', strokeWidth: 1, strokeDasharray: '3 3' }}
             contentStyle={{
               backgroundColor: '#18181b',
               border: '1px solid #27272a',
@@ -110,8 +115,15 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
               fontSize: 12,
             }}
             labelStyle={{ color: '#a1a1aa' }}
+            itemStyle={{ color: '#e4e4e7' }}
             labelFormatter={(v) => new Date(v as number).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-            formatter={(v) => [`${currency} ${(Number(v) || 0).toLocaleString('id-ID', { maximumFractionDigits: 2 })}`, 'Equity']}
+            formatter={(v) => {
+              const equity = Number(v) || 0
+              const delta = equity - startingCapital
+              const sign = delta >= 0 ? '+' : ''
+              const fmt = (n: number) => n.toLocaleString('id-ID', { maximumFractionDigits: 2 })
+              return [`${currency} ${fmt(equity)} (${sign}${fmt(delta)})`, 'Equity']
+            }}
           />
           <Line
             type="monotone"

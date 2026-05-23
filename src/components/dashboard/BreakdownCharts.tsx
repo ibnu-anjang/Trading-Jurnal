@@ -22,11 +22,20 @@ function tooltipStyle() {
       fontSize: 12,
     },
     labelStyle: { color: '#a1a1aa' },
+    itemStyle: { color: '#e4e4e7' },
   }
 }
 
 function fmtMoney(v: number, currency: string) {
   return `${currency} ${v.toLocaleString('id-ID', { maximumFractionDigits: 2 })}`
+}
+
+function fmtAxis(v: number) {
+  const abs = Math.abs(v)
+  if (abs >= 1000) return `${(v / 1000).toFixed(abs >= 10000 ? 0 : 1)}k`
+  if (abs >= 100) return v.toFixed(0)
+  if (abs === 0) return '0'
+  return v.toFixed(1)
 }
 
 /* ---------------------- Day of Week ---------------------- */
@@ -59,7 +68,7 @@ function DayOfWeekChart({ trades, currency }: Props) {
         <BarChart data={data} margin={{ top: 5, right: 8, left: -25, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
           <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#71717a' }} stroke="#3f3f46" tickLine={false} />
-          <YAxis tick={{ fontSize: 10, fill: '#71717a' }} stroke="#3f3f46" tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} width={48} />
+          <YAxis tick={{ fontSize: 10, fill: '#71717a' }} stroke="#3f3f46" tickLine={false} tickFormatter={fmtAxis} width={48} />
           <Tooltip
             {...t}
             formatter={(v) => [fmtMoney(Number(v) || 0, currency), 'Net P/L']}
@@ -106,7 +115,7 @@ function SymbolChart({ trades, currency }: Props) {
       <ResponsiveContainer>
         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false} />
-          <XAxis type="number" tick={{ fontSize: 10, fill: '#71717a' }} stroke="#3f3f46" tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
+          <XAxis type="number" tick={{ fontSize: 10, fill: '#71717a' }} stroke="#3f3f46" tickLine={false} tickFormatter={fmtAxis} />
           <YAxis type="category" dataKey="symbol" tick={{ fontSize: 10, fill: '#a1a1aa' }} stroke="#3f3f46" tickLine={false} width={64} />
           <Tooltip
             {...t}
