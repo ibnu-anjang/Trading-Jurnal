@@ -4,6 +4,7 @@ export type WinLoss = 'Win' | 'Loss' | 'Breakeven'
 export interface Trade {
   id: string
   user_id: string
+  account_id: string | null
   trade_date: string
   symbol: string
   direction: Direction
@@ -25,7 +26,7 @@ export interface Trade {
 
 export type TradeInsert = Omit<
   Trade,
-  'id' | 'user_id' | 'points' | 'net' | 'win_loss' | 'created_at' | 'updated_at'
+  'id' | 'user_id' | 'account_id' | 'points' | 'net' | 'win_loss' | 'created_at' | 'updated_at'
 >
 
 export interface UserSettings {

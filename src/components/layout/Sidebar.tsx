@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BarChart3, CalendarDays, ListOrdered, TrendingUp, Settings } from 'lucide-react'
+import { BarChart3, CalendarDays, ListOrdered, TrendingUp, Settings, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: BarChart3 },
   { href: '/trades', label: 'All Trades', icon: ListOrdered },
   { href: '/calendar', label: 'Calendar', icon: CalendarDays },
+  { href: '/accounts', label: 'Accounts', icon: Wallet },
 ]
 
 export default function Sidebar() {

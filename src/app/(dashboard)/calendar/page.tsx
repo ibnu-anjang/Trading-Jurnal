@@ -1,15 +1,33 @@
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { CalendarDays } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getActiveAccount } from '@/lib/active-account'
+import { CalendarDays, Wallet } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export default async function CalendarPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { account } = await getActiveAccount()
 
+  if (!account) {
+    return (
+      <Card className="bg-zinc-900 border-zinc-800 max-w-md mx-auto mt-10">
+        <CardContent className="p-6 space-y-3 text-center">
+          <Wallet className="h-8 w-8 text-emerald-400 mx-auto" />
+          <h3 className="text-sm font-semibold text-zinc-100">Belum ada akun trading</h3>
+          <p className="text-xs text-zinc-500">Buat akun trading dulu untuk melihat calendar.</p>
+          <Link href="/accounts/new" className="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium px-4">
+            Buat Akun
+          </Link>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const supabase = await createClient()
   const { data: trades } = await supabase
     .from('trades')
     .select('trade_date, net, win_loss')
-    .eq('user_id', user!.id)
+    .eq('account_id', account.id)
 
   // Agregasi P/L per hari
   const dailyMap: Record<string, { net: number; count: number }> = {}

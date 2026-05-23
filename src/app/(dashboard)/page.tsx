@@ -1,27 +1,37 @@
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { BarChart3, TrendingUp, TrendingDown, Target, Activity, DollarSign } from 'lucide-react'
+import { getActiveAccount } from '@/lib/active-account'
+import { BarChart3, TrendingUp, TrendingDown, Target, Activity, DollarSign, Wallet } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { account } = await getActiveAccount()
 
-  // Fetch semua trade milik user
+  if (!account) {
+    return (
+      <Card className="bg-zinc-900 border-zinc-800 max-w-md mx-auto mt-10">
+        <CardContent className="p-6 space-y-3 text-center">
+          <Wallet className="h-8 w-8 text-emerald-400 mx-auto" />
+          <h3 className="text-sm font-semibold text-zinc-100">Belum ada akun trading</h3>
+          <p className="text-xs text-zinc-500">Buat akun trading dulu untuk melihat dashboard.</p>
+          <Link href="/accounts/new" className="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium px-4">
+            Buat Akun
+          </Link>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const supabase = await createClient()
   const { data: trades } = await supabase
     .from('trades')
     .select('*')
-    .eq('user_id', user!.id)
+    .eq('account_id', account.id)
     .order('trade_date', { ascending: false })
 
-  // Fetch starting capital
-  const { data: settings } = await supabase
-    .from('user_settings')
-    .select('starting_capital, currency')
-    .eq('user_id', user!.id)
-    .single()
-
-  const startingCapital = settings?.starting_capital ?? 10000
-  const currency = settings?.currency ?? 'USD'
+  const startingCapital = account.initial_balance
+  const currency = account.currency
 
   // Kalkulasi KPI
   const totalTrades = trades?.length ?? 0

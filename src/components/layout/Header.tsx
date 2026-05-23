@@ -11,12 +11,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { LogOut, Settings } from 'lucide-react'
+import AccountSwitcher from '@/components/layout/AccountSwitcher'
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Dashboard',
   '/trades': 'All Trades',
   '/calendar': 'Calendar View',
   '/settings': 'Settings',
+  '/accounts': 'Akun Trading',
+  '/accounts/new': 'Akun Baru',
 }
 
 interface HeaderProps {
@@ -38,8 +41,12 @@ export default function Header({ userEmail }: HeaderProps) {
   }
 
   return (
-    <header className="h-14 border-b border-zinc-800 bg-zinc-900 px-6 flex items-center justify-between shrink-0">
-      <h1 className="text-sm font-semibold text-zinc-100">{title}</h1>
+    <header className="h-14 border-b border-zinc-800 bg-zinc-900 px-4 sm:px-6 flex items-center justify-between shrink-0 gap-3">
+      <h1 className="text-sm font-semibold text-zinc-100 hidden md:block">{title}</h1>
+
+      <div className="flex items-center gap-2 flex-1 md:flex-none md:ml-auto">
+        <AccountSwitcher />
+      </div>
 
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2.5 hover:opacity-80 transition-opacity outline-none">

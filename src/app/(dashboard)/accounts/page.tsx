@@ -1,0 +1,107 @@
+'use client'
+
+import Link from 'next/link'
+import { useState } from 'react'
+import { useAccounts } from '@/hooks/useAccounts'
+import { useActiveAccount } from '@/contexts/ActiveAccountContext'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { formatCurrency } from '@/lib/utils'
+import { Plus, Wallet, Trash2, Check, Loader2 } from 'lucide-react'
+
+export default function AccountsPage() {
+  const { accounts, loading, deleteAccount } = useAccounts()
+  const { activeAccount, setActiveAccount } = useActiveAccount()
+  const [busyId, setBusyId] = useState<string | null>(null)
+
+  async function handleDelete(id: string) {
+    if (!confirm('Hapus akun ini? Semua trade di akun ini juga akan terhapus.')) return
+    setBusyId(id)
+    await deleteAccount(id)
+    setBusyId(null)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 text-zinc-600 gap-2">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="text-sm">Memuat akun...</span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-3xl space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Wallet className="h-4 w-4 text-emerald-400" />
+          <h2 className="text-sm font-semibold text-zinc-100">Akun Trading</h2>
+          <Badge variant="outline" className="text-zinc-500 border-zinc-700 text-xs">
+            {accounts.length} akun
+          </Badge>
+        </div>
+        <Link href="/accounts/new" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium px-4">
+          <Plus className="h-4 w-4" /> Akun Baru
+        </Link>
+      </div>
+
+      {accounts.length === 0 ? (
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="p-6 text-center space-y-3">
+            <CardDescription className="text-zinc-500 text-sm">
+              Belum ada akun trading. Buat akun pertamamu untuk mulai mencatat trade.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-3">
+          {accounts.map(acc => {
+            const isActive = activeAccount?.id === acc.id
+            return (
+              <Card key={acc.id} className="bg-zinc-900 border-zinc-800">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-sm text-zinc-100 flex items-center gap-2">
+                        {acc.name}
+                        {isActive && (
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">
+                            <Check className="h-2.5 w-2.5 mr-0.5" /> Aktif
+                          </Badge>
+                        )}
+                      </CardTitle>
+                      <CardDescription className="text-zinc-500 text-xs mt-0.5">
+                        {acc.broker ? `${acc.broker} • ` : ''}
+                        {acc.currency} • {formatCurrency(acc.initial_balance)}
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0">
+                      {!isActive && (
+                        <Button
+                          onClick={() => setActiveAccount(acc.id)}
+                          variant="outline"
+                          className="h-8 text-xs border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                        >
+                          Jadikan aktif
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() => handleDelete(acc.id)}
+                        disabled={busyId === acc.id}
+                        variant="outline"
+                        className="h-8 w-8 p-0 border-zinc-700 bg-zinc-800 text-red-400 hover:bg-red-500/10"
+                      >
+                        {busyId === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
