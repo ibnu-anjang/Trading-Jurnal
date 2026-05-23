@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -46,9 +45,9 @@ export default function AccountSwitcher() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" className="w-64 bg-zinc-900 border-zinc-800">
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-zinc-500">
+        <div className="px-2 py-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
           Akun Trading
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator className="bg-zinc-800" />
         {accounts.map(acc => (
           <DropdownMenuItem

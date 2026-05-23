@@ -17,7 +17,7 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-zinc-800 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-zinc-800 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/80 pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5 h-14">
         {items.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))
