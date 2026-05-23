@@ -71,8 +71,9 @@ export default function TradeTable({ trades, onDelete }: Props) {
   return (
     <div className="space-y-4">
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <div className="relative flex-1 min-w-[140px] sm:flex-none">
+      <div className="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+        {/* Search (full-width di mobile) */}
+        <div className="relative sm:flex-none">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
           <Input
             placeholder="Cari symbol / alasan..."
@@ -82,50 +83,55 @@ export default function TradeTable({ trades, onDelete }: Props) {
           />
         </div>
 
-        <Select value={filterSymbol} onValueChange={v => v && setFilterSymbol(v)}>
-          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-32 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-zinc-800 border-zinc-700">
-            {symbols.map(s => (
-              <SelectItem key={s} value={s} className="text-zinc-100 focus:bg-zinc-700">
-                {s === 'all' ? 'Semua Symbol' : s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Filters: 3 kolom rata di mobile, auto-width di sm+ */}
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-3 sm:contents">
+          <Select value={filterSymbol} onValueChange={v => v && setFilterSymbol(v)}>
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-full sm:w-32 text-sm min-w-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 border-zinc-700">
+              {symbols.map(s => (
+                <SelectItem key={s} value={s} className="text-zinc-100 focus:bg-zinc-700">
+                  {s === 'all' ? 'Semua Symbol' : s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select value={filterDir} onValueChange={v => v && setFilterDir(v)}>
-          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-32 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-zinc-800 border-zinc-700">
-            <SelectItem value="all" className="text-zinc-100 focus:bg-zinc-700">Semua Arah</SelectItem>
-            <SelectItem value="Long" className="text-emerald-400 focus:bg-zinc-700">Long</SelectItem>
-            <SelectItem value="Short" className="text-red-400 focus:bg-zinc-700">Short</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={filterDir} onValueChange={v => v && setFilterDir(v)}>
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-full sm:w-32 text-sm min-w-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 border-zinc-700">
+              <SelectItem value="all" className="text-zinc-100 focus:bg-zinc-700">Semua Arah</SelectItem>
+              <SelectItem value="Long" className="text-emerald-400 focus:bg-zinc-700">Long</SelectItem>
+              <SelectItem value="Short" className="text-red-400 focus:bg-zinc-700">Short</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select value={filterWL} onValueChange={v => v && setFilterWL(v)}>
-          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-32 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-zinc-800 border-zinc-700">
-            <SelectItem value="all" className="text-zinc-100 focus:bg-zinc-700">Semua Status</SelectItem>
-            <SelectItem value="Win" className="text-emerald-400 focus:bg-zinc-700">Win</SelectItem>
-            <SelectItem value="Loss" className="text-red-400 focus:bg-zinc-700">Loss</SelectItem>
-            <SelectItem value="Breakeven" className="text-zinc-400 focus:bg-zinc-700">Breakeven</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={filterWL} onValueChange={v => v && setFilterWL(v)}>
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-300 h-9 w-full sm:w-32 text-sm min-w-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 border-zinc-700">
+              <SelectItem value="all" className="text-zinc-100 focus:bg-zinc-700">Semua Status</SelectItem>
+              <SelectItem value="Win" className="text-emerald-400 focus:bg-zinc-700">Win</SelectItem>
+              <SelectItem value="Loss" className="text-red-400 focus:bg-zinc-700">Loss</SelectItem>
+              <SelectItem value="Breakeven" className="text-zinc-400 focus:bg-zinc-700">Breakeven</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Summary bar */}
-        <div className="ml-auto flex items-center gap-3 sm:gap-4 text-xs sm:text-sm w-full sm:w-auto justify-end">
+        {/* Summary bar (di baris sendiri di mobile, kanan di desktop) */}
+        <div className="sm:ml-auto flex items-center justify-between sm:justify-end gap-3 sm:gap-4 text-xs sm:text-sm pt-1 sm:pt-0 border-t sm:border-0 border-zinc-800">
           <span className="text-zinc-500">{filtered.length} trades</span>
-          <span className="text-emerald-400">{wins}W</span>
-          <span className="text-red-400">{losses}L</span>
-          <span className={`font-semibold ${totalNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
-          </span>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <span className="text-emerald-400">{wins}W</span>
+            <span className="text-red-400">{losses}L</span>
+            <span className={`font-semibold tabular-nums ${totalNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {totalNet >= 0 ? '+' : ''}{formatCurrency(totalNet)}
+            </span>
+          </div>
         </div>
       </div>
 
