@@ -60,28 +60,28 @@ export default function AccountsPage() {
             const isActive = activeAccount?.id === acc.id
             return (
               <Card key={acc.id} className="bg-zinc-900 border-zinc-800">
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between gap-2">
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-sm text-zinc-100 flex items-center gap-2">
-                        {acc.name}
+                      <CardTitle className="text-sm text-zinc-100 flex items-center gap-2 flex-wrap">
+                        <span className="truncate">{acc.name}</span>
                         {isActive && (
                           <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">
                             <Check className="h-2.5 w-2.5 mr-0.5" /> Aktif
                           </Badge>
                         )}
                       </CardTitle>
-                      <CardDescription className="text-zinc-500 text-xs mt-0.5">
+                      <CardDescription className="text-zinc-500 text-xs mt-1">
                         {acc.broker ? `${acc.broker} • ` : ''}
                         {acc.currency} • {formatCurrency(acc.initial_balance)}
                       </CardDescription>
                     </div>
-                    <div className="flex gap-1.5 shrink-0">
+                    <div className="flex gap-1.5 shrink-0 w-full sm:w-auto">
                       {!isActive && (
                         <Button
                           onClick={() => setActiveAccount(acc.id)}
                           variant="outline"
-                          className="h-8 text-xs border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                          className="h-9 text-xs border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 flex-1 sm:flex-none"
                         >
                           Jadikan aktif
                         </Button>
@@ -90,7 +90,7 @@ export default function AccountsPage() {
                         onClick={() => handleDelete(acc.id)}
                         disabled={busyId === acc.id}
                         variant="outline"
-                        className="h-8 w-8 p-0 border-zinc-700 bg-zinc-800 text-red-400 hover:bg-red-500/10"
+                        className="h-9 w-9 p-0 border-zinc-700 bg-zinc-800 text-red-400 hover:bg-red-500/10 shrink-0"
                       >
                         {busyId === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                       </Button>

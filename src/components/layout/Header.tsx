@@ -41,10 +41,10 @@ export default function Header({ userEmail }: HeaderProps) {
   }
 
   return (
-    <header className="h-14 border-b border-zinc-800 bg-zinc-900 px-4 sm:px-6 flex items-center justify-between shrink-0 gap-3">
-      <h1 className="text-sm font-semibold text-zinc-100 hidden md:block">{title}</h1>
+    <header className="border-b border-zinc-800 bg-zinc-900 px-4 sm:px-6 flex items-center justify-between shrink-0 gap-3 h-14 pt-[env(safe-area-inset-top)]" style={{ minHeight: 'calc(3.5rem + env(safe-area-inset-top))' }}>
+      <h1 className="text-sm font-semibold text-zinc-100 hidden lg:block">{title}</h1>
 
-      <div className="flex items-center gap-2 flex-1 md:flex-none md:ml-auto">
+      <div className="flex items-center gap-2 flex-1 lg:flex-none lg:ml-auto min-w-0">
         <AccountSwitcher />
       </div>
 

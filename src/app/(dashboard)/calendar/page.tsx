@@ -67,16 +67,16 @@ export default async function CalendarPage() {
       </div>
 
       <Card className="bg-zinc-900 border-zinc-800">
-        <CardContent className="pt-4">
+        <CardContent className="pt-4 px-2 sm:px-4">
           {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-1">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-1">
             {dayNames.map(d => (
-              <div key={d} className="text-center text-xs font-medium text-zinc-500 py-2">{d}</div>
+              <div key={d} className="text-center text-[10px] sm:text-xs font-medium text-zinc-500 py-1.5">{d}</div>
             ))}
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
             {blanks.map((_, i) => <div key={`blank-${i}`} />)}
             {days.map(day => {
               const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -93,15 +93,15 @@ export default async function CalendarPage() {
               return (
                 <div
                   key={day}
-                  className={`rounded-lg border p-1.5 min-h-[72px] flex flex-col ${cellClass} ${isToday ? 'ring-1 ring-emerald-400' : ''}`}
+                  className={`rounded-md sm:rounded-lg border p-1 sm:p-1.5 min-h-[56px] sm:min-h-[72px] flex flex-col ${cellClass} ${isToday ? 'ring-1 ring-emerald-400' : ''}`}
                 >
-                  <span className={`text-xs font-bold ${isToday ? 'text-emerald-400' : 'text-zinc-400'}`}>
+                  <span className={`text-[10px] sm:text-xs font-bold ${isToday ? 'text-emerald-400' : 'text-zinc-400'}`}>
                     {day}
                   </span>
                   {data && (
                     <>
-                      <span className="text-[10px] text-zinc-500 mt-auto">{data.count} trade{data.count > 1 ? 's' : ''}</span>
-                      <span className={`text-[11px] font-semibold ${data.net >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <span className="hidden sm:inline text-[10px] text-zinc-500 mt-auto">{data.count} trade{data.count > 1 ? 's' : ''}</span>
+                      <span className={`text-[9px] sm:text-[11px] font-semibold mt-auto leading-tight ${data.net >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {data.net >= 0 ? '+' : ''}${data.net.toFixed(0)}
                       </span>
                     </>
