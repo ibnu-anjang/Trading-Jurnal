@@ -1,9 +1,12 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getActiveAccount } from '@/lib/active-account'
-import { BarChart3, TrendingUp, TrendingDown, Target, Activity, DollarSign, Wallet } from 'lucide-react'
+import { BarChart3, TrendingUp, Target, Activity, DollarSign, Wallet, CalendarDays, Layers, ArrowLeftRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import EquityCurve from '@/components/dashboard/EquityCurve'
+import { DayOfWeekChart, SymbolChart, LongShortStat } from '@/components/dashboard/BreakdownCharts'
+import type { Trade } from '@/types/trade'
 
 export default async function DashboardPage() {
   const { account } = await getActiveAccount()
@@ -106,43 +109,64 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      {/* Equity Curve placeholder */}
+      {/* Equity Curve */}
       <Card className="bg-zinc-900 border-zinc-800">
-        <CardHeader>
-          <CardTitle className="text-zinc-100 text-base flex items-center gap-2">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-emerald-400" />
             Equity Curve
           </CardTitle>
+          <div className="flex items-center justify-between text-xs sm:text-sm pt-1">
+            <span className="text-zinc-500">Start: <span className="text-zinc-300 tabular-nums">{currency} {startingCapital.toLocaleString('id-ID')}</span></span>
+            <span className="text-zinc-500">Now: <span className={`font-semibold tabular-nums ${totalNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{currency} {(startingCapital + totalNet).toLocaleString('id-ID')}</span></span>
+          </div>
         </CardHeader>
-        <CardContent>
-          {totalTrades === 0 ? (
-            <div className="h-48 flex flex-col items-center justify-center text-zinc-600 gap-2">
-              <TrendingDown className="h-8 w-8" />
-              <p className="text-sm">Belum ada trade. Tambah trade pertamamu!</p>
-            </div>
-          ) : (
-            <div className="h-48 flex items-center justify-center text-zinc-500 text-sm">
-              Chart akan tampil setelah Fase 3
-            </div>
-          )}
+        <CardContent className="px-2 sm:px-4">
+          <EquityCurve trades={(trades as Trade[]) ?? []} startingCapital={startingCapital} currency={currency} />
         </CardContent>
       </Card>
 
-      {/* Starting Capital info */}
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardContent className="pt-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-zinc-500">Starting Capital</span>
-            <span className="text-zinc-200 font-medium">${startingCapital.toLocaleString()} {currency}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm mt-2">
-            <span className="text-zinc-500">Current Equity (estimasi)</span>
-            <span className={`font-medium ${totalNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-              ${(startingCapital + totalNet).toLocaleString()}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Breakdown grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        {/* Long vs Short */}
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+              <ArrowLeftRight className="h-4 w-4 text-violet-400" />
+              Long vs Short
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LongShortStat trades={(trades as Trade[]) ?? []} currency={currency} />
+          </CardContent>
+        </Card>
+
+        {/* Day of Week */}
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-blue-400" />
+              Performa per Hari
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-4">
+            <DayOfWeekChart trades={(trades as Trade[]) ?? []} currency={currency} />
+          </CardContent>
+        </Card>
+
+        {/* Symbol */}
+        <Card className="bg-zinc-900 border-zinc-800 lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+              <Layers className="h-4 w-4 text-amber-400" />
+              Top Symbols
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-4">
+            <SymbolChart trades={(trades as Trade[]) ?? []} currency={currency} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
