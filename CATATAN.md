@@ -3,6 +3,15 @@
 ## Status Saat Ini
 - [x] Fase 1: Setup project (Next.js, Tailwind, shadcn/ui, Supabase, Auth, Middleware)
 - [x] Fase 2: Trade Log (form input, tabel lengkap, filter, sort, delete, Symbol CRUD)
+- [x] Fase A: Multi-Account (tiap user bisa banyak akun trading, switcher di header, /accounts CRUD, empty-state inline per page)
+
+---
+
+## Fase A — Catatan & Future Improvements
+- [ ] Edit akun (nama, broker) di /accounts — dialog edit
+- [ ] Edit `initial_balance` dengan konfirmasi (warning: akan ubah ROI/equity curve historis)
+- [ ] (advanced) Tabel `account_transactions` terpisah untuk deposit/withdraw — modal awal tetap, capital adjustment tracked
+- [ ] Archive (soft-delete) akun — bukan hard delete; preserve trade history
 
 ---
 
@@ -33,10 +42,16 @@
 - [ ] Heatmap performa per jam entry
 - [ ] Export data trades ke CSV
 
+## Fase B — Mobile Responsive Pass (NEXT)
+- [ ] TradeTable → card view di breakpoint <md (table sulit di-scroll di HP)
+- [ ] Bottom navigation untuk mobile (Sidebar disembunyikan, ganti bottom-nav)
+- [ ] Modal AddTrade → full-screen sheet di mobile (saat ini kepotong)
+- [ ] Header: account switcher tetap visible di mobile, sembunyikan title page
+- [ ] Audit touch targets (min 44px) & overflow di semua page
+
 ## Fase 7 — Deploy & Polish
 - [ ] Deploy ke Vercel (connect GitHub repo → auto deploy)
 - [ ] Setup environment variables di Vercel dashboard
 - [ ] Custom domain (opsional)
 - [ ] Loading skeleton untuk semua halaman
 - [ ] Error boundary & toast notifications
-- [ ] Responsive mobile layout

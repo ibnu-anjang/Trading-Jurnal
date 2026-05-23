@@ -90,7 +90,9 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
         Tambah Trade
       </DialogTrigger>
 
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-xl p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="bg-zinc-900 border-zinc-800 p-0 gap-0 overflow-hidden flex flex-col
+        max-sm:!max-w-none max-sm:!w-screen max-sm:!h-[100dvh] max-sm:!max-h-[100dvh] max-sm:!rounded-none max-sm:!top-0 max-sm:!left-0 max-sm:!translate-x-0 max-sm:!translate-y-0
+        sm:max-w-xl sm:max-h-[90vh]">
         {/* Header strip warna sesuai hasil */}
         <div className={cn(
           'h-1 w-full shrink-0 transition-colors',
