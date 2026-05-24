@@ -12,6 +12,7 @@ import { Plus, Loader2, TrendingUp, TrendingDown, DollarSign, Brain } from 'luci
 import { cn, formatCurrency } from '@/lib/utils'
 import { TradeInsert } from '@/types/trade'
 import TagsInput from './TagsInput'
+import { toast } from 'sonner'
 
 interface Props {
   onAdd: (trade: TradeInsert) => Promise<{ error: string | null }>
@@ -91,9 +92,10 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
       tags,
     })
 
-    if (error) { setError(error); setLoading(false); return }
+    if (error) { setError(error); toast.error('Gagal tambah trade', { description: error }); setLoading(false); return }
     handleClose(false)
     setLoading(false)
+    toast.success('Trade berhasil ditambahkan')
   }
 
   return (

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Trash2, Search, ChevronUp, ChevronDown } from 'lucide-react'
 import { formatDateTime, formatCurrency } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface Props {
   trades: Trade[]
@@ -58,8 +59,10 @@ export default function TradeTable({ trades, onDelete, onRowClick }: Props) {
 
   async function handleDelete(id: string) {
     setDeleting(id)
-    await onDelete(id)
+    const { error } = await onDelete(id)
     setDeleting(null)
+    if (error) toast.error('Gagal hapus trade', { description: error })
+    else toast.success('Trade dihapus')
   }
 
   function SortIcon({ k }: { k: SortKey }) {

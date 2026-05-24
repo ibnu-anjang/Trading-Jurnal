@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Wallet, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 const CURRENCIES = ['USD', 'IDR', 'EUR', 'GBP', 'JPY', 'AUD', 'SGD']
 const ACTIVE_ACCOUNT_COOKIE = 'active_account_id'
@@ -34,7 +35,14 @@ export default function NewAccountPage() {
       currency,
       initial_balance: bal,
     })
-    if (err || !data) { setError(err ?? 'Gagal membuat akun'); setBusy(false); return }
+    if (err || !data) {
+      const msg = err ?? 'Gagal membuat akun'
+      setError(msg)
+      toast.error('Gagal membuat akun', { description: msg })
+      setBusy(false)
+      return
+    }
+    toast.success(`Akun "${name.trim()}" berhasil dibuat`)
     // Auto-switch hanya kalau ini akun pertama. Kalau user udah punya akun aktif,
     // tetap di akun lama supaya gak ganggu konteks kerja.
     const isFirstAccount = accounts.length === 0

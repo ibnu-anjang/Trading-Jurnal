@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils'
 import { Plus, Wallet, Trash2, Check, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function AccountsPage() {
   const { accounts, loading, deleteAccount } = useAccounts()
@@ -18,8 +19,10 @@ export default function AccountsPage() {
   async function handleDelete(id: string) {
     if (!confirm('Hapus akun ini? Semua trade di akun ini juga akan terhapus.')) return
     setBusyId(id)
-    await deleteAccount(id)
+    const { error } = await deleteAccount(id)
     setBusyId(null)
+    if (error) toast.error('Gagal hapus akun', { description: error })
+    else toast.success('Akun dihapus')
   }
 
   if (loading) {

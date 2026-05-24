@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2, Pencil, Check, X, Loader2, BarChart2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function SettingsPage() {
   const { symbols, loading, addSymbol, deleteSymbol, updateSymbol } = useSymbols()
@@ -28,8 +29,8 @@ export default function SettingsPage() {
     setAdding(true)
     setError(null)
     const { error } = await addSymbol(newName, newDesc)
-    if (error) setError(error)
-    else { setNewName(''); setNewDesc('') }
+    if (error) { setError(error); toast.error('Gagal tambah symbol', { description: error }) }
+    else { setNewName(''); setNewDesc(''); toast.success(`Symbol "${newName.trim().toUpperCase()}" ditambahkan`) }
     setAdding(false)
   }
 
@@ -42,9 +43,10 @@ export default function SettingsPage() {
   async function handleSaveEdit() {
     if (!editId || !editName.trim()) return
     setSaving(true)
-    await updateSymbol(editId, editName, editDesc)
-    setEditId(null)
+    const { error } = await updateSymbol(editId, editName, editDesc)
     setSaving(false)
+    if (error) toast.error('Gagal update symbol', { description: error })
+    else { setEditId(null); toast.success('Symbol diupdate') }
   }
 
   return (
@@ -176,7 +178,11 @@ export default function SettingsPage() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => deleteSymbol(sym.id)}
+                            onClick={async () => {
+                              const { error } = await deleteSymbol(sym.id)
+                              if (error) toast.error('Gagal hapus symbol', { description: error })
+                              else toast.success(`Symbol "${sym.name}" dihapus`)
+                            }}
                             className="h-7 w-7 text-zinc-600 hover:text-red-400 hover:bg-red-500/10"
                           >
                             <Trash2 className="h-3 w-3" />

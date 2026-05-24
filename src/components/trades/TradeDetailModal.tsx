@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Pencil, Trash2, Loader2, X, Save, TrendingUp, TrendingDown, DollarSign, Brain, Calendar, Tag as TagIcon } from 'lucide-react'
+import { toast } from 'sonner'
 import { cn, formatCurrency, formatDateTime } from '@/lib/utils'
 import { Trade, TradeInsert } from '@/types/trade'
 import TagsInput from './TagsInput'
@@ -98,9 +99,10 @@ export default function TradeDetailModal({ trade, open, onClose, onUpdate, onDel
       lesson_notes: form.lesson_notes || null,
       tags: form.tags,
     })
-    if (err) { setError(err); setBusy(false); return }
+    if (err) { setError(err); toast.error('Gagal update trade', { description: err }); setBusy(false); return }
     setEditing(false)
     setBusy(false)
+    toast.success('Trade berhasil diupdate')
   }
 
   async function handleDelete() {
@@ -108,8 +110,9 @@ export default function TradeDetailModal({ trade, open, onClose, onUpdate, onDel
     setBusy(true)
     const { error: err } = await onDelete(trade!.id)
     setBusy(false)
-    if (err) { setError(err); return }
+    if (err) { setError(err); toast.error('Gagal hapus trade', { description: err }); return }
     onClose()
+    toast.success('Trade dihapus')
   }
 
   function handleCancel() {
