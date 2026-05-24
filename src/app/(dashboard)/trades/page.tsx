@@ -10,7 +10,8 @@ import TradeTable from '@/components/trades/TradeTable'
 import TradeDetailModal from '@/components/trades/TradeDetailModal'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { ListOrdered, Loader2, Wallet } from 'lucide-react'
+import { ListOrdered, Wallet } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { Trade } from '@/types/trade'
 
 export default function TradesPage() {
@@ -52,9 +53,18 @@ export default function TradesPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-zinc-600 gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm">Memuat trades...</span>
+        <div className="space-y-2">
+          {/* Filter bar skeleton */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Skeleton className="h-9 flex-1" />
+            <Skeleton className="h-9 w-full sm:w-28" />
+            <Skeleton className="h-9 w-full sm:w-28" />
+            <Skeleton className="h-9 w-full sm:w-28" />
+          </div>
+          {/* Row skeletons */}
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-14 sm:h-12 w-full" />
+          ))}
         </div>
       ) : (
         <TradeTable trades={trades} onDelete={deleteTrade} onRowClick={setSelectedTrade} />

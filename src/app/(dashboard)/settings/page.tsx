@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2, Pencil, Check, X, Loader2, BarChart2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function SettingsPage() {
   const { symbols, loading, addSymbol, deleteSymbol, updateSymbol } = useSymbols()
@@ -107,9 +108,10 @@ export default function SettingsPage() {
             </Label>
 
             {loading ? (
-              <div className="flex items-center gap-2 py-4 text-zinc-600">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">Memuat...</span>
+              <div className="space-y-2 py-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-10 w-full" />
+                ))}
               </div>
             ) : symbols.length === 0 ? (
               <div className="py-8 text-center text-zinc-600 border border-dashed border-zinc-800 rounded-lg">

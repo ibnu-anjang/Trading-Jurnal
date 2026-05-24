@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils'
 import { Plus, Wallet, Trash2, Check, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function AccountsPage() {
   const { accounts, loading, deleteAccount } = useAccounts()
@@ -27,9 +28,14 @@ export default function AccountsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-zinc-600 gap-2">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="text-sm">Memuat akun...</span>
+      <div className="max-w-3xl mx-auto space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-9 w-32" />
+        </div>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 w-full rounded-xl" />
+        ))}
       </div>
     )
   }
