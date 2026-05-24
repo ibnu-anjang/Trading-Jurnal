@@ -120,8 +120,9 @@ export default function ScreenshotUploader({ tradeId, userId, screenshots, onCha
                     onClick={() => setLightbox(url)}
                     className="block w-full h-full"
                   >
+                    {/* signed URL (Supabase, TTL 1jam) — next/image proxy fight cache, plain <img> lebih cocok */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </button>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -199,6 +200,7 @@ export default function ScreenshotUploader({ tradeId, userId, screenshots, onCha
           <img
             src={lightbox}
             alt=""
+            decoding="async"
             className="max-w-full max-h-full object-contain"
             onClick={e => e.stopPropagation()}
           />
