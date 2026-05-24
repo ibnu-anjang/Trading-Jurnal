@@ -20,6 +20,7 @@ export interface Trade {
   emotion_score: number | null
   rule_followed: boolean | null
   lesson_notes: string | null
+  tags: string[]
   created_at: string
   updated_at: string
 }

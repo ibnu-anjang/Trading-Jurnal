@@ -12,12 +12,13 @@ import { formatDateTime, formatCurrency } from '@/lib/utils'
 interface Props {
   trades: Trade[]
   onDelete: (id: string) => Promise<{ error: string | null }>
+  onRowClick?: (trade: Trade) => void
 }
 
 type SortKey = 'trade_date' | 'symbol' | 'net' | 'emotion_score'
 type SortDir = 'asc' | 'desc'
 
-export default function TradeTable({ trades, onDelete }: Props) {
+export default function TradeTable({ trades, onDelete, onRowClick }: Props) {
   const [search, setSearch] = useState('')
   const [filterDir, setFilterDir] = useState('all')
   const [filterWL, setFilterWL] = useState('all')
@@ -143,7 +144,11 @@ export default function TradeTable({ trades, onDelete }: Props) {
           </div>
         )}
         {filtered.map(t => (
-          <div key={t.id} className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50 space-y-2">
+          <div
+            key={t.id}
+            onClick={() => onRowClick?.(t)}
+            className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50 space-y-2 active:bg-zinc-800/60 transition-colors cursor-pointer"
+          >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -210,7 +215,7 @@ export default function TradeTable({ trades, onDelete }: Props) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleDelete(t.id)}
+                onClick={(e) => { e.stopPropagation(); handleDelete(t.id) }}
                 disabled={deleting === t.id}
                 className="h-7 px-2 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 text-[11px]"
               >
@@ -265,7 +270,11 @@ export default function TradeTable({ trades, onDelete }: Props) {
               </tr>
             )}
             {filtered.map(t => (
-              <tr key={t.id} className="hover:bg-zinc-800/40 transition-colors group">
+              <tr
+                key={t.id}
+                onClick={() => onRowClick?.(t)}
+                className="hover:bg-zinc-800/40 transition-colors group cursor-pointer"
+              >
                 <td className="py-3 px-3 text-zinc-400 whitespace-nowrap text-xs">
                   {formatDateTime(t.trade_date)}
                 </td>
@@ -324,7 +333,7 @@ export default function TradeTable({ trades, onDelete }: Props) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(t.id)}
+                    onClick={(e) => { e.stopPropagation(); handleDelete(t.id) }}
                     disabled={deleting === t.id}
                     className="h-7 w-7 opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
                   >

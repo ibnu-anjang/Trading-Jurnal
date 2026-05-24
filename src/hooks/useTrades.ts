@@ -75,5 +75,12 @@ export function useTrades(accountId: string | null) {
     return { error: null }
   }
 
-  return { trades, loading, error, addTrade, deleteTrade, refetch }
+  async function updateTrade(id: string, payload: TradeInsert) {
+    const { error: err } = await supabase.from('trades').update(payload).eq('id', id)
+    if (err) { setError(err.message); return { error: err.message } }
+    await refetch()
+    return { error: null }
+  }
+
+  return { trades, loading, error, addTrade, updateTrade, deleteTrade, refetch }
 }

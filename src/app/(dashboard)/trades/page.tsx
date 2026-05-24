@@ -1,20 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { useTrades } from '@/hooks/useTrades'
 import { useSymbols } from '@/hooks/useSymbols'
 import { useActiveAccount } from '@/contexts/ActiveAccountContext'
 import AddTradeModal from '@/components/trades/AddTradeModal'
 import TradeTable from '@/components/trades/TradeTable'
+import TradeDetailModal from '@/components/trades/TradeDetailModal'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ListOrdered, Loader2, Wallet } from 'lucide-react'
+import type { Trade } from '@/types/trade'
 
 export default function TradesPage() {
   const { activeAccount } = useActiveAccount()
-  const { trades, loading, addTrade, deleteTrade } = useTrades(activeAccount?.id ?? null)
+  const { trades, loading, addTrade, updateTrade, deleteTrade } = useTrades(activeAccount?.id ?? null)
   const { symbols } = useSymbols()
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
 
   if (!activeAccount) {
     return (
@@ -54,8 +57,17 @@ export default function TradesPage() {
           <span className="text-sm">Memuat trades...</span>
         </div>
       ) : (
-        <TradeTable trades={trades} onDelete={deleteTrade} />
+        <TradeTable trades={trades} onDelete={deleteTrade} onRowClick={setSelectedTrade} />
       )}
+
+      <TradeDetailModal
+        trade={selectedTrade}
+        open={!!selectedTrade}
+        onClose={() => setSelectedTrade(null)}
+        onUpdate={updateTrade}
+        onDelete={deleteTrade}
+        symbols={symbolNames}
+      />
     </div>
   )
 }

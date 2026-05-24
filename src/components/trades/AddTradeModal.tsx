@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import { Plus, Loader2, TrendingUp, TrendingDown, DollarSign, Brain } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { TradeInsert } from '@/types/trade'
+import TagsInput from './TagsInput'
 
 interface Props {
   onAdd: (trade: TradeInsert) => Promise<{ error: string | null }>
@@ -37,6 +38,7 @@ const defaultForm = {
 export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Props) {
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(defaultForm)
+  const [tags, setTags] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,13 +58,20 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
   }
 
   function handleClose(val: boolean) {
-    if (!val) { setForm(defaultForm); setError(null) }
+    if (!val) { setForm(defaultForm); setTags([]); setError(null) }
     setOpen(val)
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.direction || !form.symbol) { setError('Symbol dan Direction wajib diisi'); return }
+    const missing: string[] = []
+    if (!form.symbol) missing.push('Symbol')
+    if (!form.direction) missing.push('Direction')
+    if (!form.entry_price) missing.push('Entry Price')
+    if (!form.close_price) missing.push('Close Price')
+    if (!form.size) missing.push('Size')
+    if (form.value === '') missing.push('Gross P/L')
+    if (missing.length > 0) { setError(`Field wajib belum diisi: ${missing.join(', ')}`); return }
     setLoading(true)
     setError(null)
 
@@ -79,6 +88,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
       emotion_score: form.emotion_score ? parseInt(form.emotion_score) : null,
       rule_followed: form.rule_followed !== '' ? form.rule_followed === 'true' : null,
       lesson_notes: form.lesson_notes || null,
+      tags,
     })
 
     if (error) { setError(error); setLoading(false); return }
@@ -316,16 +326,22 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
                 className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-600 resize-none h-16 text-sm" />
             </div>
 
-            {error && (
-              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-zinc-500">Tags</Label>
+              <TagsInput tags={tags} onChange={setTags} />
+            </div>
+
           </form>
         </div>
 
         {/* Footer sticky */}
-        <div className="px-6 py-4 border-t border-zinc-800 shrink-0 flex justify-end gap-2 bg-zinc-900">
+        <div className="px-6 py-3 border-t border-zinc-800 shrink-0 bg-zinc-900 space-y-3">
+          {error && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+              ⚠ {error}
+            </p>
+          )}
+          <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={() => handleClose(false)}
             className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 h-9 text-sm">
             Batal
@@ -339,6 +355,7 @@ export default function AddTradeModal({ onAdd, symbols = DEFAULT_SYMBOLS }: Prop
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {loading ? 'Menyimpan...' : 'Simpan Trade'}
           </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
