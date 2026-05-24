@@ -7,7 +7,7 @@
 - [x] Fase B: Mobile Responsive (bottom nav <lg, sidebar lg+, TradeTable card view, modal full-screen, filter bar adaptif, KPI 2-col mobile, calendar grid compact, safe-area inset)
 - [x] Fase 3: Dashboard & Visualisasi (Equity Curve, KPI lengkap, Day of Week, Symbol breakdown, Long vs Short)
 - [x] Fase 4: Calendar View Interaktif (navigasi bulan, month picker, daily P/L, day detail modal, weekly summary)
-- [x] Fase 5: Trade Detail & Edit (modal detail, edit semua field, tags) — **sisa: upload screenshot**
+- [x] Fase 5: Trade Detail & Edit (modal detail, edit semua field, tags, upload screenshot)
 
 ---
 
@@ -34,11 +34,11 @@
 - [x] Monthly summary card: Total P/L, Trading Days, W/L, Best/Worst Day
 - [x] Weekly summary (kolom kanan desktop, list di bawah untuk mobile)
 
-## Fase 5 — Trade Detail & Edit
+## Fase 5 — Trade Detail & Edit (DONE)
 - [x] Klik row trade → buka modal detail trade
 - [x] Edit trade (semua field bisa diubah)
 - [x] Tambah tag/label per trade (TagsInput)
-- [ ] Upload screenshot chart (Supabase Storage)
+- [x] Upload screenshot chart (Supabase Storage bucket `trade-screenshots`, RLS per user, multi-file, lightbox)
 
 ## Fase 6 — Analitik Lanjutan
 - [x] Filter dashboard by rentang tanggal (7H/30H/90H/MTD/YTD/All/Custom)
