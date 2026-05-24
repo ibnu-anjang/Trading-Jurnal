@@ -8,6 +8,7 @@
 - [x] Fase 3: Dashboard & Visualisasi (Equity Curve, KPI lengkap, Day of Week, Symbol breakdown, Long vs Short)
 - [x] Fase 4: Calendar View Interaktif (navigasi bulan, month picker, daily P/L, day detail modal, weekly summary)
 - [x] Fase 5: Trade Detail & Edit (modal detail, edit semua field, tags, upload screenshot)
+- [x] Fase 6: Analitik Lanjutan (date range filter, streak, drawdown, hourly heatmap, CSV export)
 
 ---
 
@@ -40,12 +41,13 @@
 - [x] Tambah tag/label per trade (TagsInput)
 - [x] Upload screenshot chart (Supabase Storage bucket `trade-screenshots`, RLS per user, multi-file, lightbox)
 
-## Fase 6 — Analitik Lanjutan
+## Fase 6 — Analitik Lanjutan (DONE)
 - [x] Filter dashboard by rentang tanggal (7H/30H/90H/MTD/YTD/All/Custom)
-- [ ] Streak tracking (berapa hari berturut-turut profit/loss)
-- [ ] Drawdown chart (max drawdown dari equity peak)
-- [ ] Heatmap performa per jam entry
-- [ ] Export data trades ke CSV
+- [x] Current Streak KPI (hari berturut-turut profit/loss)
+- [x] Max Drawdown KPI ($ + % dari peak)
+- [x] Drawdown chart (area chart % drawdown over time)
+- [x] Heatmap performa per jam entry (24 cell grid, intensity by net P/L)
+- [x] Export data trades ke CSV (semua kolom, UTF-8 BOM untuk Excel)
 
 ## Fase B — Mobile Responsive Pass (DONE)
 - [x] TradeTable → card view di <md
