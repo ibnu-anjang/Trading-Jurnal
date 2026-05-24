@@ -37,10 +37,10 @@ export default function ScreenshotUploader({ tradeId, userId, screenshots, onCha
     supabase.storage
       .from(BUCKET)
       .createSignedUrls(screenshots, URL_TTL)
-      .then(({ data }: { data: Array<{ signedUrl: string; path: string | null }> | null }) => {
+      .then(({ data }) => {
         if (!alive || !data) return
         const map: Record<string, string> = {}
-        data.forEach((item, i: number) => {
+        data.forEach((item, i) => {
           if (item.signedUrl) map[screenshots[i]] = item.signedUrl
         })
         setUrls(map)
