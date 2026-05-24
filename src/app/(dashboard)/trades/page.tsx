@@ -10,8 +10,11 @@ import TradeTable from '@/components/trades/TradeTable'
 import TradeDetailModal from '@/components/trades/TradeDetailModal'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { ListOrdered, Wallet } from 'lucide-react'
+import { ListOrdered, Wallet, Download } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { tradesToCSV, downloadCSV } from '@/lib/csv'
+import { toast } from 'sonner'
 
 export default function TradesPage() {
   const { activeAccount } = useActiveAccount()
@@ -49,7 +52,27 @@ export default function TradesPage() {
             {trades.length} total
           </Badge>
         </div>
-        <AddTradeModal onAdd={addTrade} symbols={symbolNames} />
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (trades.length === 0) {
+                toast.error('Belum ada trade untuk di-export')
+                return
+              }
+              const csv = tradesToCSV(trades)
+              const fname = `trades-${activeAccount.name.replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.csv`
+              downloadCSV(fname, csv)
+              toast.success(`Export ${trades.length} trade`, { description: fname })
+            }}
+            className="h-9 border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 text-xs gap-1.5"
+          >
+            <Download className="h-3.5 w-3.5" /> CSV
+          </Button>
+          <AddTradeModal onAdd={addTrade} symbols={symbolNames} />
+        </div>
       </div>
 
       {loading ? (
