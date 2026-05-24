@@ -1,10 +1,11 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown } from 'lucide-react'
+import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import EquityCurve from '@/components/dashboard/EquityCurve'
 import DrawdownChart from '@/components/dashboard/DrawdownChart'
+import HourlyHeatmap from '@/components/dashboard/HourlyHeatmap'
 import { DayOfWeekChart, SymbolChart, LongShortStat } from '@/components/dashboard/BreakdownCharts'
 import DateRangeFilter, { computeRange, type DateRange } from '@/components/dashboard/DateRangeFilter'
 import type { Trade } from '@/types/trade'
@@ -247,6 +248,19 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
           </CardHeader>
           <CardContent className="px-2 sm:px-4">
             <SymbolChart trades={filtered} currency={currency} />
+          </CardContent>
+        </Card>
+
+        {/* Hourly heatmap */}
+        <Card className="bg-zinc-900 border-zinc-800 lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+              <Clock className="h-4 w-4 text-cyan-400" />
+              Performa per Jam Entry
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 sm:px-4 pb-4">
+            <HourlyHeatmap trades={filtered} currency={currency} />
           </CardContent>
         </Card>
       </div>
