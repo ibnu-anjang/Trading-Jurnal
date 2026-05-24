@@ -74,7 +74,7 @@
 - [x] Toast notifications (sonner) untuk semua action CRUD
 
 ### Pre-deploy (manual di Supabase Dashboard)
-- [ ] **Enable Leaked Password Protection**: Supabase Dashboard → Auth → Providers → Email → toggle "Check passwords against HaveIBeenPwned"
+- [~] ~~Enable Leaked Password Protection~~ — locked di Pro plan ($25/bln), skip untuk free tier. Acceptable: existing password policy (min 6 char) sudah cukup untuk solo project.
 
 ### Deploy
 - [ ] Deploy ke Vercel (connect GitHub repo → auto deploy)

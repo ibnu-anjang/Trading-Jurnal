@@ -2,11 +2,13 @@
   "name": "trading-journal",
   "version": "0.1.0",
   "private": true,
+  "description": "Web app untuk track, analisa, dan tingkatkan performa trading. Multi-akun, screenshot chart, analitik lanjutan.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
