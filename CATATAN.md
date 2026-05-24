@@ -41,7 +41,7 @@
 - [ ] Upload screenshot chart (Supabase Storage)
 
 ## Fase 6 — Analitik Lanjutan
-- [ ] Filter dashboard by rentang tanggal (minggu ini, bulan ini, custom range)
+- [x] Filter dashboard by rentang tanggal (7H/30H/90H/MTD/YTD/All/Custom)
 - [ ] Streak tracking (berapa hari berturut-turut profit/loss)
 - [ ] Drawdown chart (max drawdown dari equity peak)
 - [ ] Heatmap performa per jam entry
