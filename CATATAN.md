@@ -60,9 +60,23 @@
 - [x] Accounts cards: tombol stack di mobile
 
 ## Fase 7 — Deploy & Polish
+### Pre-deploy hardening (DONE)
+- [x] Error boundary: `error.tsx` + `global-error.tsx` + `not-found.tsx` (Next 16 `unstable_retry`)
+- [x] Logger utility (`src/lib/logger.ts`) — Vercel Runtime Logs friendly
+- [x] Supabase typegen end-to-end (`src/types/database.ts`, typed client/server/middleware)
+- [x] Env validation fail-fast (`src/lib/env.ts`) + `.env.example`
+- [x] Supabase advisors: RLS perf (auth.uid → (select auth.uid)) + drop duplicate policies + function search_path
+- [x] `npm run build` lulus zero warning
+- [x] `npm run lint` zero error/warning (React 19 strict rules)
+- [x] README maintenance proper (setup, deploy, troubleshooting, struktur folder)
+- [x] Lazy-load screenshot thumbnails (`loading="lazy"` + `decoding="async"`)
+- [x] Loading skeleton (dashboard, trades, accounts, settings)
+- [x] Toast notifications (sonner) untuk semua action CRUD
+
+### Pre-deploy (manual di Supabase Dashboard)
+- [ ] **Enable Leaked Password Protection**: Supabase Dashboard → Auth → Providers → Email → toggle "Check passwords against HaveIBeenPwned"
+
+### Deploy
 - [ ] Deploy ke Vercel (connect GitHub repo → auto deploy)
 - [ ] Setup environment variables di Vercel dashboard
 - [ ] Custom domain (opsional)
-- [x] Loading skeleton (dashboard, trades, accounts, settings) — sisa: calendar overlay sudah cukup
-- [x] Toast notifications (sonner) untuk semua action CRUD
-- [ ] Error boundary global (Next.js error.tsx)
