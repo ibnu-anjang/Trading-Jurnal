@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import EquityCurve from '@/components/dashboard/EquityCurve'
+import DrawdownChart from '@/components/dashboard/DrawdownChart'
 import { DayOfWeekChart, SymbolChart, LongShortStat } from '@/components/dashboard/BreakdownCharts'
 import DateRangeFilter, { computeRange, type DateRange } from '@/components/dashboard/DateRangeFilter'
 import type { Trade } from '@/types/trade'
@@ -192,6 +193,22 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
         </CardHeader>
         <CardContent className="px-2 sm:px-4">
           <EquityCurve trades={filtered} startingCapital={startingCapital} currency={currency} />
+        </CardContent>
+      </Card>
+
+      {/* Drawdown */}
+      <Card className="bg-zinc-900 border-zinc-800">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+            <TrendingDown className="h-4 w-4 text-orange-400" />
+            Drawdown
+          </CardTitle>
+          <p className="text-xs text-zinc-500 pt-1">
+            Penurunan equity dari peak (%). Makin dekat 0 makin baik.
+          </p>
+        </CardHeader>
+        <CardContent className="px-2 sm:px-4">
+          <DrawdownChart trades={filtered} startingCapital={startingCapital} />
         </CardContent>
       </Card>
 
