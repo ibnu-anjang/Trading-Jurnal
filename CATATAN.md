@@ -61,5 +61,6 @@
 - [ ] Deploy ke Vercel (connect GitHub repo → auto deploy)
 - [ ] Setup environment variables di Vercel dashboard
 - [ ] Custom domain (opsional)
-- [ ] Loading skeleton untuk semua halaman
-- [ ] Error boundary & toast notifications
+- [x] Loading skeleton (dashboard, trades, accounts, settings) — sisa: calendar overlay sudah cukup
+- [x] Toast notifications (sonner) untuk semua action CRUD
+- [ ] Error boundary global (Next.js error.tsx)
