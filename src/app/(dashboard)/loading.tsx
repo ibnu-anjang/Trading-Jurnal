@@ -5,8 +5,8 @@ export default function DashboardLoading() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i} className="bg-zinc-900 border-zinc-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
               <Skeleton className="h-3 w-20" />

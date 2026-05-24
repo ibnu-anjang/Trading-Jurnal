@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight } from 'lucide-react'
+import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import EquityCurve from '@/components/dashboard/EquityCurve'
 import { DayOfWeekChart, SymbolChart, LongShortStat } from '@/components/dashboard/BreakdownCharts'
@@ -43,7 +43,47 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       : 0
     const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0
     const roi = startingCapital > 0 ? (totalNet / startingCapital) * 100 : 0
-    return { totalTrades, wins, losses, winRate, totalNet, avgWin, avgLoss, profitFactor, roi }
+
+    // Current streak: hari berturut-turut dengan sign net P/L sama, dihitung mundur dari hari terakhir
+    const dailyMap: Record<string, number> = {}
+    filtered.forEach(t => {
+      const day = t.trade_date.slice(0, 10)
+      dailyMap[day] = (dailyMap[day] ?? 0) + (t.net ?? 0)
+    })
+    const sortedDays = Object.keys(dailyMap).sort() // ascending
+    let currentStreakCount = 0
+    let currentStreakType: 'W' | 'L' | null = null
+    for (let i = sortedDays.length - 1; i >= 0; i--) {
+      const net = dailyMap[sortedDays[i]]
+      const type = net > 0 ? 'W' : net < 0 ? 'L' : null
+      if (type === null) break
+      if (currentStreakType === null) { currentStreakType = type; currentStreakCount = 1 }
+      else if (type === currentStreakType) currentStreakCount += 1
+      else break
+    }
+
+    // Max drawdown: walk chronologically through trades, track equity peak, max gap
+    const chronological = [...filtered].sort((a, b) => a.trade_date.localeCompare(b.trade_date))
+    let equity = startingCapital
+    let peak = startingCapital
+    let maxDrawdown = 0
+    let maxDrawdownPct = 0
+    chronological.forEach(t => {
+      equity += t.net ?? 0
+      if (equity > peak) peak = equity
+      const dd = peak - equity
+      if (dd > maxDrawdown) {
+        maxDrawdown = dd
+        maxDrawdownPct = peak > 0 ? (dd / peak) * 100 : 0
+      }
+    })
+
+    return {
+      totalTrades, wins, losses, winRate, totalNet, avgWin, avgLoss, profitFactor, roi,
+      currentStreakCount, currentStreakType,
+      maxDrawdown, maxDrawdownPct,
+      tradingDays: sortedDays.length,
+    }
   }, [filtered, startingCapital])
 
   const kpiCards = [
@@ -79,6 +119,32 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       color: 'text-amber-400',
       bg: 'bg-amber-500/10 border-amber-500/20',
     },
+    {
+      title: 'Current Streak',
+      value: kpis.currentStreakType
+        ? `${kpis.currentStreakCount}${kpis.currentStreakType}`
+        : '—',
+      sub: kpis.currentStreakType === 'W'
+        ? `${kpis.currentStreakCount} hari profit`
+        : kpis.currentStreakType === 'L'
+          ? `${kpis.currentStreakCount} hari loss`
+          : `${kpis.tradingDays} trading days`,
+      icon: Flame,
+      color: kpis.currentStreakType === 'W' ? 'text-emerald-400' : kpis.currentStreakType === 'L' ? 'text-red-400' : 'text-zinc-400',
+      bg: kpis.currentStreakType === 'W'
+        ? 'bg-emerald-500/10 border-emerald-500/20'
+        : kpis.currentStreakType === 'L'
+          ? 'bg-red-500/10 border-red-500/20'
+          : 'bg-zinc-800 border-zinc-700',
+    },
+    {
+      title: 'Max Drawdown',
+      value: kpis.maxDrawdown > 0 ? `-$${kpis.maxDrawdown.toFixed(2)}` : '—',
+      sub: kpis.maxDrawdown > 0 ? `${kpis.maxDrawdownPct.toFixed(2)}% dari peak` : 'belum ada DD',
+      icon: TrendingDown,
+      color: kpis.maxDrawdown > 0 ? 'text-orange-400' : 'text-zinc-400',
+      bg: kpis.maxDrawdown > 0 ? 'bg-orange-500/10 border-orange-500/20' : 'bg-zinc-800 border-zinc-700',
+    },
   ]
 
   return (
@@ -92,7 +158,7 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4">
         {kpiCards.map((card) => {
           const Icon = card.icon
           return (
