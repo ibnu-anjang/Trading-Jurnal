@@ -39,6 +39,8 @@ yarn-error.log*
 
 # claude code workspace (per-dev settings, jangan commit)
 .claude/
+AGENTS.md
+CLAUDE.md
 
 # supabase cli cache
 supabase/.temp/

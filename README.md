@@ -130,5 +130,5 @@ src/
 ## Catatan Development
 
 - Fase-fase pengembangan didokumentasikan di [`CATATAN.md`](./CATATAN.md).
-- Convention Next.js 16 versi ini ada perubahan dari training data — selalu cek `node_modules/next/dist/docs/` sebelum nulis kode baru. Lihat juga `AGENTS.md`.
+- Convention Next.js 16 versi ini ada perubahan dari training data — selalu cek `node_modules/next/dist/docs/` sebelum nulis kode baru.
 - Tidak ada test suite — perubahan diverifikasi via `tsc --noEmit` + `npm run lint` + manual UI test.
