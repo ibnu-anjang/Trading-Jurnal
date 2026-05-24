@@ -82,5 +82,12 @@ export function useTrades(accountId: string | null) {
     return { error: null }
   }
 
-  return { trades, loading, error, addTrade, updateTrade, deleteTrade, refetch }
+  async function updateScreenshots(id: string, screenshots: string[]) {
+    const { error: err } = await supabase.from('trades').update({ screenshots }).eq('id', id)
+    if (err) { setError(err.message); return { error: err.message } }
+    await refetch()
+    return { error: null }
+  }
+
+  return { trades, loading, error, addTrade, updateTrade, updateScreenshots, deleteTrade, refetch }
 }

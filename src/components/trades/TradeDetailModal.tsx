@@ -14,12 +14,16 @@ import { toast } from 'sonner'
 import { cn, formatCurrency, formatDateTime } from '@/lib/utils'
 import { Trade, TradeInsert } from '@/types/trade'
 import TagsInput from './TagsInput'
+import ScreenshotUploader from './ScreenshotUploader'
+import { createClient } from '@/lib/supabase/client'
+import { Image as ImageIcon } from 'lucide-react'
 
 interface Props {
   trade: Trade | null
   open: boolean
   onClose: () => void
   onUpdate: (id: string, payload: TradeInsert) => Promise<{ error: string | null }>
+  onUpdateScreenshots?: (id: string, screenshots: string[]) => Promise<{ error: string | null }>
   onDelete: (id: string) => Promise<{ error: string | null }>
   symbols?: string[]
 }
@@ -44,17 +48,26 @@ function tradeToForm(t: Trade) {
   }
 }
 
-export default function TradeDetailModal({ trade, open, onClose, onUpdate, onDelete, symbols = DEFAULT_SYMBOLS }: Props) {
+export default function TradeDetailModal({ trade, open, onClose, onUpdate, onUpdateScreenshots, onDelete, symbols = DEFAULT_SYMBOLS }: Props) {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState(trade ? tradeToForm(trade) : null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     if (trade) setForm(tradeToForm(trade))
     setEditing(false)
     setError(null)
   }, [trade])
+
+  useEffect(() => {
+    if (!open || userId) return
+    const supabase = createClient()
+    supabase.auth.getUser().then((res: { data: { user: { id: string } | null } }) => {
+      if (res.data.user) setUserId(res.data.user.id)
+    })
+  }, [open, userId])
 
   if (!trade || !form) return null
 
@@ -289,6 +302,20 @@ export default function TradeDetailModal({ trade, open, onClose, onUpdate, onDel
                 <TagsInput tags={form.tags} onChange={setTags} />
               </div>
 
+              {userId && onUpdateScreenshots && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-zinc-500 flex items-center gap-1.5">
+                    <ImageIcon className="h-3 w-3" /> Screenshots
+                  </Label>
+                  <ScreenshotUploader
+                    tradeId={trade.id}
+                    userId={userId}
+                    screenshots={trade.screenshots ?? []}
+                    onChange={async (paths) => { await onUpdateScreenshots(trade.id, paths) }}
+                  />
+                </div>
+              )}
+
             </form>
           ) : (
             /* === VIEW MODE === */
@@ -373,6 +400,23 @@ export default function TradeDetailModal({ trade, open, onClose, onUpdate, onDel
                   <p className="text-xs text-zinc-500 uppercase tracking-wide">Lesson / Catatan</p>
                   <p className="text-sm text-zinc-300 whitespace-pre-wrap bg-zinc-800/40 border border-zinc-800 rounded-lg p-3">{trade.lesson_notes}</p>
                 </div>
+              )}
+
+              {userId && onUpdateScreenshots && (
+                <>
+                  <Separator className="bg-zinc-800" />
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-zinc-500 uppercase tracking-wide flex items-center gap-1.5">
+                      <ImageIcon className="h-3 w-3" /> Screenshots {trade.screenshots?.length ? `(${trade.screenshots.length})` : ''}
+                    </p>
+                    <ScreenshotUploader
+                      tradeId={trade.id}
+                      userId={userId}
+                      screenshots={trade.screenshots ?? []}
+                      onChange={async (paths) => { await onUpdateScreenshots(trade.id, paths) }}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}

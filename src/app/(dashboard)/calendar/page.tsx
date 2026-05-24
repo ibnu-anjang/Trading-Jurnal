@@ -23,7 +23,7 @@ function dateKey(year: number, month: number, day: number) {
 
 export default function CalendarPage() {
   const { activeAccount } = useActiveAccount()
-  const { trades, loading, updateTrade, deleteTrade } = useTrades(activeAccount?.id ?? null)
+  const { trades, loading, updateTrade, updateScreenshots, deleteTrade } = useTrades(activeAccount?.id ?? null)
   const { symbols } = useSymbols()
   const symbolNames = useMemo(() => symbols.map(s => s.name), [symbols])
 
@@ -31,7 +31,8 @@ export default function CalendarPage() {
   const [viewYear, setViewYear] = useState(now.getFullYear())
   const [viewMonth, setViewMonth] = useState(now.getMonth())
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
+  const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null)
+  const selectedTrade = selectedTradeId ? trades.find(t => t.id === selectedTradeId) ?? null : null
   const [pickerOpen, setPickerOpen] = useState(false)
   const [pickerYear, setPickerYear] = useState(now.getFullYear())
 
@@ -358,7 +359,7 @@ export default function CalendarPage() {
         date={selectedDate}
         trades={selectedDate ? (tradesByDate[selectedDate] ?? []) : []}
         onTradeClick={(t) => {
-          setSelectedTrade(t)
+          setSelectedTradeId(t.id)
           setSelectedDate(null)
         }}
       />
@@ -366,8 +367,9 @@ export default function CalendarPage() {
       <TradeDetailModal
         trade={selectedTrade}
         open={!!selectedTrade}
-        onClose={() => setSelectedTrade(null)}
+        onClose={() => setSelectedTradeId(null)}
         onUpdate={updateTrade}
+        onUpdateScreenshots={updateScreenshots}
         onDelete={deleteTrade}
         symbols={symbolNames}
       />

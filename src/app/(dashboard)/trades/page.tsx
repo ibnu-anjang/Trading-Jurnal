@@ -12,13 +12,13 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { ListOrdered, Wallet } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Trade } from '@/types/trade'
 
 export default function TradesPage() {
   const { activeAccount } = useActiveAccount()
-  const { trades, loading, addTrade, updateTrade, deleteTrade } = useTrades(activeAccount?.id ?? null)
+  const { trades, loading, addTrade, updateTrade, updateScreenshots, deleteTrade } = useTrades(activeAccount?.id ?? null)
   const { symbols } = useSymbols()
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
+  const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null)
+  const selectedTrade = selectedTradeId ? trades.find(t => t.id === selectedTradeId) ?? null : null
 
   if (!activeAccount) {
     return (
@@ -67,14 +67,15 @@ export default function TradesPage() {
           ))}
         </div>
       ) : (
-        <TradeTable trades={trades} onDelete={deleteTrade} onRowClick={setSelectedTrade} />
+        <TradeTable trades={trades} onDelete={deleteTrade} onRowClick={(t) => setSelectedTradeId(t.id)} />
       )}
 
       <TradeDetailModal
         trade={selectedTrade}
         open={!!selectedTrade}
-        onClose={() => setSelectedTrade(null)}
+        onClose={() => setSelectedTradeId(null)}
         onUpdate={updateTrade}
+        onUpdateScreenshots={updateScreenshots}
         onDelete={deleteTrade}
         symbols={symbolNames}
       />
