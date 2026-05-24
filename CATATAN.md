@@ -5,6 +5,9 @@
 - [x] Fase 2: Trade Log (form input, tabel lengkap, filter, sort, delete, Symbol CRUD)
 - [x] Fase A: Multi-Account (tiap user bisa banyak akun trading, switcher di header, /accounts CRUD, empty-state inline per page)
 - [x] Fase B: Mobile Responsive (bottom nav <lg, sidebar lg+, TradeTable card view, modal full-screen, filter bar adaptif, KPI 2-col mobile, calendar grid compact, safe-area inset)
+- [x] Fase 3: Dashboard & Visualisasi (Equity Curve, KPI lengkap, Day of Week, Symbol breakdown, Long vs Short)
+- [x] Fase 4: Calendar View Interaktif (navigasi bulan, month picker, daily P/L, day detail modal, weekly summary)
+- [x] Fase 5: Trade Detail & Edit (modal detail, edit semua field, tags) — **sisa: upload screenshot**
 
 ---
 
@@ -16,25 +19,26 @@
 
 ---
 
-## Fase 3 — Dashboard & Visualisasi
-- [ ] Equity Curve chart (Recharts) — grafik pertumbuhan akun dari waktu ke waktu
-- [ ] KPI cards lengkap: Win Rate, Profit Factor, Avg Win, Avg Loss, Total Net P/L, ROI
-- [ ] Breakdown per Day of Week (bar chart — hari apa paling profit)
-- [ ] Breakdown per Symbol (bar chart — symbol mana paling menguntungkan)
-- [ ] Breakdown Long vs Short
-- [ ] Starting capital setting di halaman Settings
+## Fase 3 — Dashboard & Visualisasi (DONE)
+- [x] Equity Curve chart (Recharts)
+- [x] KPI cards lengkap: Win Rate, Profit Factor, Avg Win, Avg Loss, Total Net P/L, ROI
+- [x] Breakdown per Day of Week (bar chart)
+- [x] Breakdown per Symbol (bar chart)
+- [x] Breakdown Long vs Short
+- [~] ~~Starting capital setting di halaman Settings~~ — obsolet, digantikan `initial_balance` per akun (Fase A multi-account)
 
-## Fase 4 — Calendar View Interaktif
-- [ ] Kalender bulanan navigasi (prev/next month)
-- [ ] Tiap hari tampil: jumlah trade, total P/L, warna hijau/merah/abu
-- [ ] Klik hari → muncul popup daftar trade di hari itu
-- [ ] Weekly summary di sisi kanan kalender
+## Fase 4 — Calendar View Interaktif (DONE)
+- [x] Kalender bulanan navigasi (prev/next month + jump bulan/tahun via picker)
+- [x] Tiap hari tampil: jumlah trade, total P/L, warna hijau/merah/abu
+- [x] Klik hari → muncul modal daftar trade di hari itu (chained ke TradeDetailModal)
+- [x] Monthly summary card: Total P/L, Trading Days, W/L, Best/Worst Day
+- [x] Weekly summary (kolom kanan desktop, list di bawah untuk mobile)
 
 ## Fase 5 — Trade Detail & Edit
-- [ ] Klik row trade → buka halaman detail trade
-- [ ] Edit trade (semua field bisa diubah)
+- [x] Klik row trade → buka modal detail trade
+- [x] Edit trade (semua field bisa diubah)
+- [x] Tambah tag/label per trade (TagsInput)
 - [ ] Upload screenshot chart (Supabase Storage)
-- [ ] Tambah tag/label per trade (misal: revenge trade, FOMO, A+ setup)
 
 ## Fase 6 — Analitik Lanjutan
 - [ ] Filter dashboard by rentang tanggal (minggu ini, bulan ini, custom range)
