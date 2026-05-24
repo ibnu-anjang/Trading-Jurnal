@@ -65,7 +65,7 @@ export default function TradeTable({ trades, onDelete, onRowClick }: Props) {
     else toast.success('Trade dihapus')
   }
 
-  function SortIcon({ k }: { k: SortKey }) {
+  function renderSortIcon(k: SortKey) {
     if (sortKey !== k) return <ChevronUp className="h-3 w-3 opacity-20" />
     return sortDir === 'asc'
       ? <ChevronUp className="h-3 w-3 text-emerald-400" />
@@ -243,7 +243,7 @@ export default function TradeTable({ trades, onDelete, onRowClick }: Props) {
                   onClick={() => toggleSort(key)}
                   className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 select-none"
                 >
-                  <span className="flex items-center gap-1">{label}<SortIcon k={key} /></span>
+                  <span className="flex items-center gap-1">{label}{renderSortIcon(key)}</span>
                 </th>
               ))}
               {['Arah', 'Entry', 'Close', 'Points', 'Size', 'Gross P/L', 'Fee'].map(h => (
@@ -255,7 +255,7 @@ export default function TradeTable({ trades, onDelete, onRowClick }: Props) {
                 onClick={() => toggleSort('net')}
                 className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider cursor-pointer hover:text-zinc-300 select-none"
               >
-                <span className="flex items-center gap-1">Net P/L<SortIcon k="net" /></span>
+                <span className="flex items-center gap-1">Net P/L{renderSortIcon('net')}</span>
               </th>
               {['Status', 'Emosi', 'Rules', 'Alasan', ''].map((h, i) => (
                 <th key={i} className="text-left py-3 px-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">

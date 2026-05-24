@@ -26,10 +26,11 @@ export function useTrades(accountId: string | null) {
 
   // Ref agar mutation functions selalu pakai accountId terbaru tanpa harus re-create.
   const accountIdRef = useRef(accountId)
-  accountIdRef.current = accountId
+  useEffect(() => { accountIdRef.current = accountId }, [accountId])
 
   useEffect(() => {
     if (!accountId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTrades([])
       setLoading(false)
       return

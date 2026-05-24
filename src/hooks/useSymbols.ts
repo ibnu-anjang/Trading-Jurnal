@@ -16,16 +16,26 @@ export function useSymbols() {
   const [loading, setLoading] = useState(true)
 
   const fetch = useCallback(async () => {
-    setLoading(true)
     const { data } = await supabase
       .from('symbols')
       .select('*')
       .order('name', { ascending: true })
     setSymbols(data ?? [])
-    setLoading(false)
   }, [supabase])
 
-  useEffect(() => { fetch() }, [fetch])
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      const { data } = await supabase
+        .from('symbols')
+        .select('*')
+        .order('name', { ascending: true })
+      if (!alive) return
+      setSymbols(data ?? [])
+      setLoading(false)
+    })()
+    return () => { alive = false }
+  }, [supabase])
 
   async function addSymbol(name: string, description?: string) {
     const { data: { user } } = await supabase.auth.getUser()

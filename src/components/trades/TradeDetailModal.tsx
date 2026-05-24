@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { Pencil, Trash2, Loader2, X, Save, TrendingUp, TrendingDown, DollarSign, Brain, Calendar, Tag as TagIcon } from 'lucide-react'
+import { Pencil, Trash2, Loader2, X, Save, TrendingUp, TrendingDown, DollarSign, Brain, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn, formatCurrency, formatDateTime } from '@/lib/utils'
 import { Trade, TradeInsert } from '@/types/trade'
@@ -56,9 +56,12 @@ export default function TradeDetailModal({ trade, open, onClose, onUpdate, onUpd
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
+    // Reset form state setiap kali trade prop berubah (modal dibuka untuk trade baru).
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (trade) setForm(tradeToForm(trade))
     setEditing(false)
     setError(null)
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [trade])
 
   useEffect(() => {
