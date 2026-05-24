@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid,
+  ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  ReferenceLine, CartesianGrid, Cell,
 } from 'recharts'
 import type { Trade } from '@/types/trade'
 
@@ -15,7 +16,8 @@ interface Props {
 interface Point {
   ts: number                 // epoch ms (untuk x-axis numeric)
   dateLabel: string          // tampilan tooltip
-  equity: number
+  dailyNet: number           // sum P/L hari itu (untuk bar)
+  equity: number             // cumulative (untuk line)
 }
 
 function formatShortDate(d: Date) {
@@ -25,24 +27,30 @@ function formatShortDate(d: Date) {
 export default function EquityCurve({ trades, startingCapital, currency }: Props) {
   const data = useMemo<Point[]>(() => {
     if (trades.length === 0) return []
-    const sorted = [...trades].sort(
-      (a, b) => new Date(a.trade_date).getTime() - new Date(b.trade_date).getTime()
-    )
-    const firstTs = new Date(sorted[0].trade_date).getTime()
-    let running = startingCapital
-    const points: Point[] = [
-      { ts: firstTs - 1, dateLabel: 'Start', equity: startingCapital },
-    ]
-    sorted.forEach(t => {
-      running += t.net ?? 0
+    // Bucket per hari (YYYY-MM-DD)
+    const dayMap: Record<string, { ts: number; net: number }> = {}
+    trades.forEach(t => {
       const d = new Date(t.trade_date)
-      points.push({
-        ts: d.getTime(),
-        dateLabel: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' }),
-        equity: running,
-      })
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      if (!dayMap[key]) {
+        // Pakai start-of-day biar ts konsisten per hari
+        const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+        dayMap[key] = { ts: dayStart.getTime(), net: 0 }
+      }
+      dayMap[key].net += t.net ?? 0
     })
-    return points
+    const sorted = Object.values(dayMap).sort((a, b) => a.ts - b.ts)
+    let running = startingCapital
+    return sorted.map(({ ts, net }) => {
+      running += net
+      const d = new Date(ts)
+      return {
+        ts,
+        dateLabel: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' }),
+        dailyNet: net,
+        equity: running,
+      }
+    })
   }, [trades, startingCapital])
 
   if (data.length === 0) {
@@ -53,34 +61,35 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
     )
   }
 
-  const minEquity = Math.min(...data.map(p => p.equity))
-  const maxEquity = Math.max(...data.map(p => p.equity))
-  const padding = Math.max((maxEquity - minEquity) * 0.1, 1)
-  const yDomain: [number, number] = [
-    Math.floor(minEquity - padding),
-    Math.ceil(maxEquity + padding),
-  ]
-
   const finalEquity = data[data.length - 1].equity
   const gain = finalEquity - startingCapital
   const isUp = gain >= 0
-  const stroke = isUp ? '#34d399' : '#f87171'
-  const gradientId = 'equityGradient'
+  const lineStroke = isUp ? '#34d399' : '#f87171'
+
+  // Domain bar (kiri): symmetric around 0 biar bar profit/loss balance visual
+  const maxAbsDaily = Math.max(...data.map(p => Math.abs(p.dailyNet)), 1)
+  const barDomain: [number, number] = [-maxAbsDaily * 1.1, maxAbsDaily * 1.1]
+
+  // Domain line (kanan): equity dengan padding
+  const minEquity = Math.min(...data.map(p => p.equity), startingCapital)
+  const maxEquity = Math.max(...data.map(p => p.equity), startingCapital)
+  const eqPad = Math.max((maxEquity - minEquity) * 0.1, 1)
+  const eqDomain: [number, number] = [
+    Math.floor(minEquity - eqPad),
+    Math.ceil(maxEquity + eqPad),
+  ]
+
+  const fmt = (n: number) => n.toLocaleString('id-ID', { maximumFractionDigits: 2 })
 
   return (
     <div className="h-56 sm:h-72 w-full">
       <ResponsiveContainer>
-        <LineChart data={data} margin={{ top: 5, right: 8, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={stroke} stopOpacity={0.3} />
-              <stop offset="95%" stopColor={stroke} stopOpacity={0} />
-            </linearGradient>
-          </defs>
+        <ComposedChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
           <XAxis
             dataKey="ts"
             type="number"
+            scale="time"
             domain={['dataMin', 'dataMax']}
             tickFormatter={(v) => formatShortDate(new Date(v))}
             tick={{ fontSize: 10, fill: '#71717a' }}
@@ -88,8 +97,10 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
             tickLine={false}
             minTickGap={30}
           />
+          {/* Y kiri = daily P/L (bar) */}
           <YAxis
-            domain={yDomain}
+            yAxisId="bar"
+            domain={barDomain}
             tick={{ fontSize: 10, fill: '#71717a' }}
             stroke="#3f3f46"
             tickLine={false}
@@ -100,14 +111,36 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
             }}
             width={50}
           />
+          {/* Y kanan = equity (line) */}
+          <YAxis
+            yAxisId="line"
+            orientation="right"
+            domain={eqDomain}
+            tick={{ fontSize: 10, fill: '#a1a1aa' }}
+            stroke="#3f3f46"
+            tickLine={false}
+            tickFormatter={(v) => {
+              const abs = Math.abs(v)
+              if (abs >= 1000) return `${(v / 1000).toFixed(abs >= 10000 ? 0 : 1)}k`
+              return v.toFixed(0)
+            }}
+            width={50}
+          />
           <ReferenceLine
+            yAxisId="bar"
+            y={0}
+            stroke="#52525b"
+            strokeWidth={1}
+          />
+          <ReferenceLine
+            yAxisId="line"
             y={startingCapital}
             stroke="#52525b"
             strokeDasharray="4 4"
             label={{ value: 'Start', fill: '#71717a', fontSize: 10, position: 'insideTopRight' }}
           />
           <Tooltip
-            cursor={{ stroke: '#a1a1aa', strokeWidth: 1, strokeDasharray: '3 3' }}
+            cursor={{ fill: '#27272a', opacity: 0.4 }}
             contentStyle={{
               backgroundColor: '#18181b',
               border: '1px solid #27272a',
@@ -116,25 +149,41 @@ export default function EquityCurve({ trades, startingCapital, currency }: Props
             }}
             labelStyle={{ color: '#a1a1aa' }}
             itemStyle={{ color: '#e4e4e7' }}
-            labelFormatter={(v) => new Date(v as number).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-            formatter={(v) => {
-              const equity = Number(v) || 0
-              const delta = equity - startingCapital
+            labelFormatter={(v) => new Date(v as number).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
+            formatter={(value, name) => {
+              const v = Number(value) || 0
+              if (name === 'P/L Harian') {
+                const sign = v >= 0 ? '+' : ''
+                return [`${currency} ${sign}${fmt(v)}`, name]
+              }
+              // Equity
+              const delta = v - startingCapital
               const sign = delta >= 0 ? '+' : ''
-              const fmt = (n: number) => n.toLocaleString('id-ID', { maximumFractionDigits: 2 })
-              return [`${currency} ${fmt(equity)} (${sign}${fmt(delta)})`, 'Equity']
+              return [`${currency} ${fmt(v)} (${sign}${fmt(delta)})`, name]
             }}
           />
+          <Bar
+            yAxisId="bar"
+            dataKey="dailyNet"
+            name="P/L Harian"
+            radius={[2, 2, 0, 0]}
+            maxBarSize={24}
+          >
+            {data.map((d, i) => (
+              <Cell key={i} fill={d.dailyNet >= 0 ? '#10b98180' : '#ef444480'} />
+            ))}
+          </Bar>
           <Line
+            yAxisId="line"
             type="monotone"
             dataKey="equity"
-            stroke={stroke}
-            strokeWidth={2}
+            name="Equity"
+            stroke={lineStroke}
+            strokeWidth={2.5}
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
-            fill={`url(#${gradientId})`}
           />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   )
