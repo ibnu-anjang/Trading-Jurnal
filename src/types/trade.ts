@@ -21,14 +21,15 @@ export interface Trade {
   rule_followed: boolean | null
   lesson_notes: string | null
   tags: string[]
+  screenshots: string[]
   created_at: string
   updated_at: string
 }
 
 export type TradeInsert = Omit<
   Trade,
-  'id' | 'user_id' | 'account_id' | 'points' | 'net' | 'win_loss' | 'created_at' | 'updated_at'
->
+  'id' | 'user_id' | 'account_id' | 'points' | 'net' | 'win_loss' | 'screenshots' | 'created_at' | 'updated_at'
+> & { screenshots?: string[] }
 
 export interface UserSettings {
   id: string
