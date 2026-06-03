@@ -31,13 +31,10 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith('/auth/confirm')) {
-    return supabaseResponse
-  }
-
   const isAuthPage = pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password')
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password')
 
   if (!user && !isAuthPage) {
     return NextResponse.redirect(new URL('/login', request.url))

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { type EmailOtpType } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,8 +10,11 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TrendingUp, Loader2 } from 'lucide-react'
 
-export default function ResetPasswordPage() {
+const INVALID_LINK = 'Link reset tidak valid atau sudah kedaluwarsa. Minta link baru dari halaman Lupa Password.'
+
+function ResetPasswordForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -30,11 +34,25 @@ export default function ResetPasswordPage() {
       return
     }
 
-    setLoading(true)
-    const { error } = await supabase.auth.updateUser({ password })
+    const tokenHash = searchParams.get('token_hash')
+    const otpType = searchParams.get('type') as EmailOtpType | null
+    if (!tokenHash || !otpType) {
+      setError(INVALID_LINK)
+      return
+    }
 
-    if (error) {
-      setError(error.message)
+    setLoading(true)
+
+    const { error: verifyError } = await supabase.auth.verifyOtp({ type: otpType, token_hash: tokenHash })
+    if (verifyError) {
+      setError(INVALID_LINK)
+      setLoading(false)
+      return
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password })
+    if (updateError) {
+      setError(updateError.message)
       setLoading(false)
       return
     }
@@ -44,6 +62,62 @@ export default function ResetPasswordPage() {
   }
 
   return (
+    <Card className="bg-zinc-900 border-zinc-800">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-xl text-zinc-100">Password baru</CardTitle>
+        <CardDescription className="text-zinc-400">
+          Masukkan password baru untuk akun kamu.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-zinc-300">Password baru</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm" className="text-zinc-300">Konfirmasi password</Label>
+            <Input
+              id="confirm"
+              type="password"
+              placeholder="••••••••"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+              {error}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            {loading ? 'Menyimpan...' : 'Simpan password baru'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -52,58 +126,9 @@ export default function ResetPasswordPage() {
           </div>
           <span className="text-xl font-bold text-zinc-100">Trading Journal</span>
         </div>
-
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl text-zinc-100">Password baru</CardTitle>
-            <CardDescription className="text-zinc-400">
-              Masukkan password baru untuk akun kamu.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-zinc-300">Password baru</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm" className="text-zinc-300">Konfirmasi password</Label>
-                <Input
-                  id="confirm"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                  className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
-                />
-              </div>
-
-              {error && (
-                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
-                  {error}
-                </p>
-              )}
-
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                {loading ? 'Menyimpan...' : 'Simpan password baru'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <Suspense fallback={<div className="text-center text-zinc-500 text-sm">Memuat...</div>}>
+          <ResetPasswordForm />
+        </Suspense>
       </div>
     </div>
   )
