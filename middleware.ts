@@ -29,8 +29,15 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/register')
+  const { pathname } = request.nextUrl
+
+  if (pathname.startsWith('/auth/confirm')) {
+    return supabaseResponse
+  }
+
+  const isAuthPage = pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password')
 
   if (!user && !isAuthPage) {
     return NextResponse.redirect(new URL('/login', request.url))
