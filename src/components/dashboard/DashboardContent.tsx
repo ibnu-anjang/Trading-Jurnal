@@ -1,11 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown, Clock } from 'lucide-react'
+import { BarChart3, TrendingUp, Target, Activity, DollarSign, CalendarDays, Layers, ArrowLeftRight, Flame, TrendingDown, Clock, Scale, ShieldCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import EquityCurve from '@/components/dashboard/EquityCurve'
 import DrawdownChart from '@/components/dashboard/DrawdownChart'
 import HourlyHeatmap from '@/components/dashboard/HourlyHeatmap'
+import RuleAdherence from '@/components/dashboard/RuleAdherence'
 import { DayOfWeekChart, SymbolChart, LongShortStat } from '@/components/dashboard/BreakdownCharts'
 import DateRangeFilter, { computeRange, type DateRange } from '@/components/dashboard/DateRangeFilter'
 import type { Trade } from '@/types/trade'
@@ -45,6 +46,7 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       : 0
     const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0
     const roi = startingCapital > 0 ? (totalNet / startingCapital) * 100 : 0
+    const expectancy = totalTrades > 0 ? totalNet / totalTrades : 0
 
     // Current streak: hari berturut-turut dengan sign net P/L sama, dihitung mundur dari hari terakhir
     const dailyMap: Record<string, number> = {}
@@ -81,7 +83,7 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
     })
 
     return {
-      totalTrades, wins, losses, winRate, totalNet, avgWin, avgLoss, profitFactor, roi,
+      totalTrades, wins, losses, winRate, totalNet, avgWin, avgLoss, profitFactor, roi, expectancy,
       currentStreakCount, currentStreakType,
       maxDrawdown, maxDrawdownPct,
       tradingDays: sortedDays.length,
@@ -112,6 +114,14 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       icon: TrendingUp,
       color: 'text-violet-400',
       bg: 'bg-violet-500/10 border-violet-500/20',
+    },
+    {
+      title: 'Expectancy',
+      value: `$${kpis.expectancy.toFixed(2)}`,
+      sub: 'rata-rata P/L per trade',
+      icon: Scale,
+      color: kpis.expectancy >= 0 ? 'text-emerald-400' : 'text-red-400',
+      bg: kpis.expectancy >= 0 ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20',
     },
     {
       title: 'Total Trades',
@@ -160,7 +170,7 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-2 sm:gap-4">
         {kpiCards.map((card) => {
           const Icon = card.icon
           return (
@@ -210,6 +220,22 @@ export default function DashboardContent({ trades, startingCapital, currency }: 
         </CardHeader>
         <CardContent className="px-2 sm:px-4">
           <DrawdownChart trades={filtered} startingCapital={startingCapital} />
+        </CardContent>
+      </Card>
+
+      {/* Disiplin: patuh vs langgar rule */}
+      <Card className="bg-zinc-900 border-zinc-800">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-zinc-100 text-sm sm:text-base flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            Disiplin Aturan
+          </CardTitle>
+          <p className="text-xs text-zinc-500 pt-1">
+            Bandingkan hasil saat kamu patuh vs langgar aturan trading sendiri.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <RuleAdherence trades={filtered} />
         </CardContent>
       </Card>
 
