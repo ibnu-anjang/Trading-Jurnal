@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, Loader2 } from 'lucide-react'
+import { TrendingUp, Loader2, Eye, EyeOff } from 'lucide-react'
 
 const INVALID_LINK = 'Link reset tidak valid atau sudah kedaluwarsa. Minta link baru dari halaman Lupa Password.'
 
@@ -20,6 +20,7 @@ function ResetPasswordForm() {
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [show, setShow] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -36,14 +37,17 @@ function ResetPasswordForm() {
 
     const tokenHash = searchParams.get('token_hash')
     const otpType = searchParams.get('type') as EmailOtpType | null
-    if (!tokenHash || !otpType) {
+    const code = searchParams.get('code')
+    if ((!tokenHash || !otpType) && !code) {
       setError(INVALID_LINK)
       return
     }
 
     setLoading(true)
 
-    const { error: verifyError } = await supabase.auth.verifyOtp({ type: otpType, token_hash: tokenHash })
+    const { error: verifyError } = tokenHash && otpType
+      ? await supabase.auth.verifyOtp({ type: otpType, token_hash: tokenHash })
+      : await supabase.auth.exchangeCodeForSession(code!)
     if (verifyError) {
       setError(INVALID_LINK)
       setLoading(false)
@@ -73,27 +77,49 @@ function ResetPasswordForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password" className="text-zinc-300">Password baru</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={show ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShow((v) => !v)}
+                tabIndex={-1}
+                aria-label={show ? 'Sembunyikan password' : 'Tampilkan password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+              >
+                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm" className="text-zinc-300">Konfirmasi password</Label>
-            <Input
-              id="confirm"
-              type="password"
-              placeholder="••••••••"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500"
-            />
+            <div className="relative">
+              <Input
+                id="confirm"
+                type={show ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShow((v) => !v)}
+                tabIndex={-1}
+                aria-label={show ? 'Sembunyikan password' : 'Tampilkan password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+              >
+                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {error && (
